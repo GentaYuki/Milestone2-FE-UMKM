@@ -14,9 +14,9 @@ interface RegisterFormValues {
 }
 
 const RegisterSchema = Yup.object().shape({
-    email: Yup.string().email('Invalid email').required('Required'),
-    password : Yup.string().min(6, 'Password must be at least 6 characters').required('Required'),
-    confirmPassword : Yup.string().oneOf([Yup.ref('password')], 'Passwords must match').required('Required'),
+    email: Yup.string().email('Invalid email').required('Email Required'),
+    password : Yup.string().min(6, 'Password must be at least 6 characters').required('Password Required'),
+    confirmPassword : Yup.string().oneOf([Yup.ref('password')], 'Passwords must match').required('Confirm Password Required'),
 });
 
 const RegisterForm : React.FC = () => {
@@ -25,7 +25,7 @@ const RegisterForm : React.FC = () => {
     const [ShowPassword, setShowPassword] = useState(false);
     const [ShowConfirmPassword, setShowConfirmPassword] = useState(false);
     
-    {/* initial value for register */}
+    {/* initial value for Register */}
     const InitialValues = {
         email: '',
         password: '',
@@ -34,7 +34,8 @@ const RegisterForm : React.FC = () => {
 
     const handleSubmit = async (values : RegisterFormValues) => {
         try {
-            const response = await axios.post('http://localhost:3000/api/auth/register', values);
+            const { email, password } = values;
+            const response = await axios.post('https://expected-odella-8fe2e9ce.koyeb.app/user/register', {email, password});
             console.log ( response.data);
             navigate('/login');
         } catch (err: unknown) {
@@ -47,14 +48,14 @@ const RegisterForm : React.FC = () => {
     };
 
     return (
-        <div className='flex justify-center items-center min-h-screen px-4'>
+        <div className='flex justify-center items-center min-h-screen px-4 bg-white'>
             <Formik
             initialValues={InitialValues}
             validationSchema={RegisterSchema}
             onSubmit={handleSubmit} >
 
             {({ isSubmitting }) => (
-                <Form className = 'w-full max-w-sm space-y-4'>
+                <Form className = 'w-full max-w-[375px] space-y-5'>
                     <h2 className = 'text-3xl font-bold text-center'>Create an account</h2>
 
                 {/* Email */}
@@ -63,7 +64,7 @@ const RegisterForm : React.FC = () => {
                 {/*Password */}
                 <div className='relative'>
                 <InputField name= 'password' type={ShowPassword ? 'text' : 'password'} placeholder='Password' icon={<FiLock />} />
-                <button type='button' className = 'absolute right-3 top-1/2 -translate-y-1/2' onClick={() => setShowPassword(!ShowPassword)}>
+                <button type='button' className = 'absolute right-3 top-1/2 -translate-y-1/2 text-gray-500' onClick={() => setShowPassword(!ShowPassword)}>
                     {ShowPassword ? <FiEye /> : <FiEyeOff />}
                 </button>
 
@@ -71,20 +72,20 @@ const RegisterForm : React.FC = () => {
                 </div>
                 <div className ='relative'>
                 <InputField name= 'confirmPassword' type={ShowConfirmPassword ? 'text' : 'password'} placeholder='Confirm Password' icon={<FiLock />} />
-                <button type='button' className = 'absolute right-3 top-1/2 -translate-y-1/2' onClick={() => setShowConfirmPassword(!ShowConfirmPassword)}>
+                <button type='button' className = 'absolute right-3 top-1/2 -translate-y-1/2 text-gray-500' onClick={() => setShowConfirmPassword(!ShowConfirmPassword)}>
                     {ShowConfirmPassword ? <FiEye/> : <FiEyeOff />}
                 </button>
                 </div>
 
-                <p className='text-xs text-gray-500'>By clicking the <span className='text-pink-600'> Register </span>button, you agree to the public offer</p>
+                <p className='text-xs text-gray-500 text-center px-2'>By clicking the <span className='text-pink-600 font-medium'> Register </span>button, you agree to the public offer</p>
 
-                <button type='submit' className='w-full bg-pink-600 text-white py-2 rounded-md' disabled={isSubmitting}>
+                <button type='submit' className='w-full bg-pink-600 text-white py-2 rounded-md text-sm font-semibold' disabled={isSubmitting}>
                     {isSubmitting ? 'Registering...' : 'Register'}
                 </button>
-                {error && <p className ='text-red-500 text-sm mt-1'>{error}</p>}
+                {error && <p className ='text-red-500 text-sm text-center'>{error}</p>}
                 
-                <p className='text-center text-sm'>
-                    I Already Have an Account <a href = '/login' className = 'text-pink-600'>Login</a>
+                <p className='text-center text-sm text-gray-700'>
+                    I Already Have an Account <a href = '/login' className = 'text-pink-600 font-medium'>Login</a>
                 </p>
             </Form>
          )}

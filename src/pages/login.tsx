@@ -13,8 +13,8 @@ interface LoginFormValues {
 }
 
 const LoginSchema=Yup.object().shape({
-    email: Yup.string().email('Invalid email').required('Required'),
-    password : Yup.string().min(6, 'Password must be at least 6 characters').required('Required'),
+    email: Yup.string().email('Invalid email').required('Email Required'),
+    password : Yup.string().min(6, 'Password must be at least 6 characters').required('Password Required'),
 })
 
 const LoginForm : React.FC = () => {
@@ -30,7 +30,7 @@ const LoginForm : React.FC = () => {
 
     const handleSubmit = async (values : LoginFormValues) => {
         try {
-            const response = await axios.post('http://localhost:3000/api/auth/login', values);
+            const response = await axios.post('https://expected-odella-8fe2e9ce.koyeb.app/user/login', values);
             console.log ( response.data);
             navigate('/dashboard');
         } catch (err: unknown) {
@@ -43,7 +43,7 @@ const LoginForm : React.FC = () => {
     };
 
     return (
-        <div className='flex justify-center items-center min-h-screen px-4'>
+        <div className='flex justify-center items-center min-h-screen px-4 bg-white'>
             <Formik
             initialValues={InitialValues}
             validationSchema = {LoginSchema}
@@ -51,7 +51,7 @@ const LoginForm : React.FC = () => {
 
             {({ isSubmitting }) => (
             
-                <Form className='w-full max-w-md space-y-4'>
+                <Form className='w-full max-w-[375px] space-y-5'>
                         <h2 className = 'text-3xl font-bold text-center'>Welcome Back!</h2>
 
                     {/* Email */}
@@ -65,12 +65,12 @@ const LoginForm : React.FC = () => {
                     </button>
                     </div>
                     
-                    <button type = 'submit' className = 'w-full bg-pink-600 text-white py-2 rounded-md' disabled={isSubmitting}>
+                    <button type = 'submit' className = 'w-full bg-pink-600 text-white py-3 rounded-md text-sm font-semibold' disabled={isSubmitting}>
                         {isSubmitting? 'Logging in...' : 'Login'}
                     </button>
-                    {error && <p className='text-red-500 text-sm mt-1'>{error}</p> }
+                    {error && <p className='text-red-500 text-sm text-center'>{error}</p> }
 
-                    <p className = 'text-center text-sm mt-6'> Create An Account <a href='/register' className = 'text-pink-600'> Sign Up</a></p>
+                    <p className = 'text-center text-sm mt-6 text-gray-700'> Create An Account <a href='/register' className = 'text-pink-600 font-medium'> Sign Up</a></p>
                 </Form>
             )}
             </Formik>
