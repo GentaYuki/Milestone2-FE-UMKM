@@ -32,6 +32,12 @@ const LoginForm : React.FC = () => {
         try {
             const response = await axios.post('https://expected-odella-8fe2e9ce.koyeb.app/user/login', values);
             console.log ( response.data);
+            const { data } = response.data;
+
+            if (data?.user?.user_id && data?.access_toke){
+                localStorage.setItem('user_id', data.user.user_id.toString());
+                localStorage.setItem('access_token', data.access_token);
+            }
             navigate('/dashboard');
         } catch (err: unknown) {
             if (axios.isAxiosError(err) && err.response) {

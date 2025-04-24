@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface CartItem {
   id: string;
@@ -11,27 +12,47 @@ interface CartItem {
 
 interface UserAddress {
   address: string;
+  city : string;
+  pincode : string;
+  username: string;
   phone: string;
+  userId: string;
 }
 
 const CheckoutPage: React.FC = () => {
   const [address, setAddress] = useState<UserAddress | null>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
+      const userId = localStorage.getItem('user_id');
+      const token = localStorage.getItem('token');
+
+      if (!userId || !token) {
+        alert('User not authenticated');
+        navigate('/login');
+        return;
+      }
       try {
-        const [userRes, cartRes] = await Promise.all([
-          axios.get('http://localhost:3000/api/auth/profile'),
-          axios.get('http://localhost:3000/api/cart'),
-        ]);
-        setAddress({
-          address: userRes.data.address,
-          phone: userRes.data.phone,
+        const userRes = await axios.get(`https://expected-odella-8fe2e9ce.koyeb.app/user/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
+
+        const userData = userRes.data;
+
+        setAddress({
+          address: userData.address,
+          city: userData.city,
+          pincode: userData.pincode || '-',
+          username: userData.username,
+          phone: userData.phone,
+          userId,
+        });
+        
+        const cartRes = await axios.get(`http://localhost:3000/api/cart?userId=${userId}`);
         setCartItems(cartRes.data);
-        setLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
         setLoading(false);
@@ -44,19 +65,32 @@ const CheckoutPage: React.FC = () => {
   const getTotalAmount = () =>
     cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
 
+  const handleProceedToPayment = () => {
+    const total = getTotalAmount();
+    localStorage.setItem('checkout_total', total.toString());
+    localStorage.setItem('checkout_user_id', address?.userId || '');
+    navigate('/payment');
+  };
+  
   if (loading) return <p className="text-center mt-10">Loading...</p>;
 
   return (
-    <div className="max-w-md mx-auto px-4 py-6">
-      <button onClick={() => history.back()} className="mb-4 text-gray-600 text-sm">← Back</button>
+    <div className="w-full max-w-sm mx-auto px-2">
+       <button onClick={() => navigate(-1)} className="flex items-center text-sm text-gray-500 mb-4 gap-1"> <span className='text-2xl'>&larr;</span>
+       </button>
       <h2 className="text-xl font-bold mb-4">Checkout</h2>
 
       {/* Address Section */}
-      <div className="bg-gray-100 p-4 rounded-lg mb-4">
-        <h3 className="text-sm font-semibold mb-1">📍 Delivery Address</h3>
-        <p className="text-sm">{address?.address}</p>
-        <p className="text-sm">Contact: {address?.phone}</p>
-      </div>
+      <section className='space-y-4 border-b pb-6 text-left'>
+      <h3 className="text-sm font-semibold mb-1 flex items-center justify-between">
+          <span>📍 Delivery Information </span>
+          <button onClick={() => navigate('/profile')} className="text-xs text-pink-600 font-medium">
+            Edit
+          </button>
+        </h3>
+        <p className="text-sm">Address : {address?.address}, {address?.city}, {address?.pincode}</p>
+        <p className="text-sm mt-1"> Name: {address?.username}, Phone: {address?.phone}</p>
+      </section>
 
       {/* Cart Items */}
       {cartItems.map((item) => (
@@ -79,27 +113,27 @@ const CheckoutPage: React.FC = () => {
       ))}
 
       {/* Summary */}
-      <div className="bg-gray-100 p-4 rounded-lg mb-4">
-        <h3 className="font-semibold mb-3">Order Payment Details</h3>
+    
+        <h3 className="font-semibold mb-3 text-left">Order Payment Details</h3>
         <div className="flex justify-between text-sm mb-1">
           <span>Order Amount</span>
-          <span>₹ {getTotalAmount().toLocaleString()}</span>
+          <span>Rp {getTotalAmount().toLocaleString()}</span>
         </div>
         <div className="flex justify-between text-sm mb-1">
           <span>Delivery Fee</span>
-          <span className="text-green-600 font-medium">Free</span>
+          <span className="text-red-600 font-medium">Free</span>
         </div>
         <hr className="my-2" />
-        <div className="flex justify-between font-bold text-lg">
+        <div className="flex justify-between text-md">
           <span>Order Total</span>
-          <span>₹ {getTotalAmount().toLocaleString()}</span>
+          <span>Rp {getTotalAmount().toLocaleString()}</span>
         </div>
-      </div>
+        <hr className="my-2" />
 
       {/* Button */}
       <button
-        className="w-full bg-pink-600 text-white py-3 rounded-lg text-center text-sm font-medium"
-        onClick={() => alert('Proceed to payment')}
+        className="w-full bg-pink-600 text-white py-3 rounded-lg text-center text-sm font-medium mt-5"
+        onClick={handleProceedToPayment}
       >
         Proceed to Payment
       </button>

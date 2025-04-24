@@ -25,8 +25,15 @@ const ProfileForm: React.FC = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
+      const userId = localStorage.getItem('user_id');
+
+      if (!userId){
+        console.error('User ID not found in localStorage');
+        navigate('/login');
+        return;
+      }
       try {
-        const response = await axios.get('http://localhost:3000/api/auth/profile');
+        const response = await axios.get('https://expected-odella-8fe2e9ce.koyeb.app/user/profile/' + userId);
         setInitialValues(response.data);
         setLoading(false);
       } catch (error) {
@@ -58,12 +65,26 @@ const ProfileForm: React.FC = () => {
       return;
     }
 
+    const userId = localStorage.getItem('user_id');
+    const token = localStorage.getItem('token');
+
+    if (!userId || !token) {
+      alert('User not authenticated');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('profilePicture', file);
 
     try {
-      await axios.post('http://localhost:3000/api/auth/profile-picture', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      await axios.post(
+        `https://expected-odella-8fe2e9ce.koyeb.app/user/${userId}/upload-profile-picture`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`,
+          },
       });
       window.location.reload();
     } catch (error) {
