@@ -113,7 +113,7 @@ const ProfileForm: React.FC = () => {
       <button onClick={() => navigate(-1)} className="flex items-center text-sm text-gray-500 mb-4 gap-1"> <span className='text-2xl'>&larr;</span>
       </button>
 
-      <h2 className="text-center text-2xl font-bold text-center mb-6">Profile</h2>
+      <h2 className="text-center text-2xl font-bold mb-6">Profile</h2>
 
       <div className="flex justify-center mb-4">
         <img

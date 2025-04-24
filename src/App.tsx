@@ -4,6 +4,7 @@ import RegisterForm from './pages/register'
 import LoginForm from './pages/login'
 import ProfileForm from './pages/profile'
 import CheckoutPage from './pages/checkout'
+import PaymentPage from './pages/payment'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path='/login' element={<LoginForm />} />
         <Route path='/profile' element={<ProfileForm />} />
         <Route path='/checkout' element={<CheckoutPage />} />
+        <Route path='/payment' element={<PaymentPage />} />
       </Routes>
     </Router>
   );
