@@ -9,7 +9,7 @@ const ProfileForm: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [initialValues, setInitialValues] = useState({
-    username:``,
+    name: '',
     email: '',
     password: '',
     profilePicture: '',
@@ -26,7 +26,7 @@ const ProfileForm: React.FC = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       const userId = localStorage.getItem('user_id');
-
+      console.log (userId);
       if (!userId){
         console.error('User ID not found in localStorage');
         navigate('/login');
@@ -34,10 +34,28 @@ const ProfileForm: React.FC = () => {
       }
       try {
         const response = await axios.get(`https://expected-odella-8fe2e9ce.koyeb.app/user/${userId}`);
-        setInitialValues(response.data);
-        setLoading(false);
+        const user = response?.data?.data;
+        console.log(user);
+
+        if (user) {
+          setInitialValues({
+            name: user.name || '',
+            email: user.email || '',
+            password: user.password ||'',
+            profilePicture: user.user_image || '',
+            phone: user.phone || '',
+            address: user.address_street || '',
+            city: user.address_city || '',
+            state: user.address_district || '',
+            country: user.address_country || '',
+            bankNumber: '',
+            accountName: '',
+            ifsc: '',
+          });
+        }
       } catch (error) {
         console.error('Error fetching profile:', error);
+      } finally {
         setLoading(false);
       }
     };
@@ -53,13 +71,33 @@ const ProfileForm: React.FC = () => {
         navigate('/login');
         return;
       }
+
+      const payload = {
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        address_street: values.address,
+        address_city: values.city,
+        address_district: values.state,
+        address_country: values.country,
+        address_subdistrict: '',
+        address_zipcode: '',    
+      };
+
     try {
-      await axios.put(`https://expected-odella-8fe2e9ce.koyeb.app/user/update/${userId}`, values);
+      await axios.put(`https://expected-odella-8fe2e9ce.koyeb.app/user/update/${userId}`, payload);
       alert('Profile updated successfully');
-      navigate('/dashboard');
+      console.log(payload);
+      navigate('/home');
     } catch (error) {
       console.error('Error updating profile:', error);
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('access_token');
+    navigate('/login');
   };
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,7 +111,7 @@ const ProfileForm: React.FC = () => {
     }
 
     const userId = localStorage.getItem('user_id');
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('access_token');
 
     if (!userId || !token) {
       alert('User not authenticated');
@@ -81,11 +119,11 @@ const ProfileForm: React.FC = () => {
     }
 
     const formData = new FormData();
-    formData.append('profilePicture', file);
+    formData.append('image', file);
 
     try {
       await axios.post(
-        `https://expected-odella-8fe2e9ce.koyeb.app/user/update/${userId}`,
+        `https://expected-odella-8fe2e9ce.koyeb.app/upload/userimage/${userId}`,
         formData,
         {
           headers: {
@@ -100,16 +138,16 @@ const ProfileForm: React.FC = () => {
   };
 
   const ProfileSchema = Yup.object().shape({
-    username: Yup.string().required('username is required'),
+    name: Yup.string().required('username is required'),
     email: Yup.string().email('Invalid email').required('Email is required'),
-    password: Yup.string().required('Password is required'),
+    password: Yup.string().nullable(),
     phone: Yup.string().required('Phone number is required'),
     address: Yup.string().required('Address is required'),
     city: Yup.string().required('City is required'),
     state: Yup.string().required('State is required'),
     country: Yup.string().required('Country is required'),
-    bankNumber: Yup.string().required('Bank number is required'),
-    accountName: Yup.string().required('Account name is required'),
+    bankNumber: Yup.string().nullable(),
+    accountName: Yup.string().nullable(),
     ifsc: Yup.string().nullable(),
   });
 
@@ -141,7 +179,7 @@ const ProfileForm: React.FC = () => {
             <h3 className="font-semibold mb-2 text-lg">Personal Details</h3>
             <div>
             <label htmlFor="username" className='block text-sm/6 font-medium text-gray-900'>Username</label>
-            <InputField name="username" type="text" placeholder="Username" />
+            <InputField name="name" type="text" placeholder="Username" />
             </div>
             <div>
             <label htmlFor='email' className='block text-sm/6 font-medium text-gray-900'>Email</label>
@@ -202,6 +240,9 @@ const ProfileForm: React.FC = () => {
 
           <button type="submit" className="w-full bg-pink-600 text-white py-3 rounded-md font-semibold text-sm">
             Save
+          </button>
+          <button onClick={handleLogout} className="w-full bg-gray-600 text-white py-3 rounded-md font-semibold text-sm">
+            Logout
           </button>
         </Form>
       </Formik>

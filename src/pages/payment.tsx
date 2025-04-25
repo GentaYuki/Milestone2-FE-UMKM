@@ -1,5 +1,6 @@
 import React, { useState , useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 // import local images
 import BCAImg from '../assets/image/BCA.jpg';
@@ -18,6 +19,7 @@ const PaymentPage: React.FC = () => {
   const [selectedMethod, setSelectedMethod] = useState<string>('');
   const [showModal, setShowModal] = useState(false);
   const [orderTotal, setOrderTotal] = useState<number>(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const total = Number(localStorage.getItem('checkout_total') || 0);
@@ -35,7 +37,7 @@ const PaymentPage: React.FC = () => {
       }
 
       // Delete cart
-      await axios.delete('http://localhost:3000/api/cart/' + userId);
+      await axios.delete(`https://expected-odella-8fe2e9ce.koyeb.app/cart/clear/${userId}`);
       // Delete total_order from localStorage
       localStorage.removeItem('checkout_total');
 
@@ -105,7 +107,10 @@ const PaymentPage: React.FC = () => {
             <p className="text-lg font-semibold mb-2">Payment done successfully.</p>
             <button
               className="mt-4 text-sm text-pink-600 underline"
-              onClick={() => setShowModal(false)}
+              onClick={() => { 
+                setShowModal(false);
+                navigate('/home');
+              }}
             >
               Close
             </button>

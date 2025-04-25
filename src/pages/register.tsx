@@ -15,7 +15,7 @@ interface RegisterFormValues {
 
 const RegisterSchema = Yup.object().shape({
     email: Yup.string().email('Invalid email').required('Email Required'),
-    password : Yup.string().min(6, 'Password must be at least 6 characters').required('Password Required'),
+    password: Yup.string().min(8, 'Password must be at least 8 characters').matches(/[A-Z]/, 'Password must contain at least one uppercase letter and number').matches(/\d/, 'Password must contain at least one number').required('Password is required'),
     confirmPassword : Yup.string().oneOf([Yup.ref('password')], 'Passwords must match').required('Confirm Password Required'),
 });
 

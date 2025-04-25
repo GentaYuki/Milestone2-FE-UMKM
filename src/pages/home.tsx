@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import NavBar from '../components/navBar'
 import { fetchProducts, Product } from '../api/products'
 
@@ -78,14 +78,16 @@ const HomePage: React.FC = () => {
                 src="https://c.animaapp.com/m9sr09xvPvV0Jw/img/group-34010.png"
               />
               <div className="[font-family:'Libre_Caslon_Text',Helvetica] font-bold text-[#4392f9] text-lg">
-                Stylish
+              UMKM Connect
               </div>
             </div>
+            <Link to = "/profile">
             <img 
               src="https://c.animaapp.com/m9sr09xvPvV0Jw/img/2289-skvnqsbgqu1pidewmjgtmte2-1.png" 
               alt="profile" 
               className="w-10 h-10 object-cover rounded-full" 
             />
+            </Link>
           </header>
 
           {/* Categories Section */}
