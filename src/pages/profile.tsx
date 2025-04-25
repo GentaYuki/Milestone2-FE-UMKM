@@ -33,7 +33,7 @@ const ProfileForm: React.FC = () => {
         return;
       }
       try {
-        const response = await axios.get('https://expected-odella-8fe2e9ce.koyeb.app/user/profile/' + userId);
+        const response = await axios.get(`https://expected-odella-8fe2e9ce.koyeb.app/user/${userId}`);
         setInitialValues(response.data);
         setLoading(false);
       } catch (error) {
@@ -46,8 +46,15 @@ const ProfileForm: React.FC = () => {
   }, []);
 
   const handleSubmit = async (values: typeof initialValues) => {
+    const userId = localStorage.getItem('user_id');
+
+      if (!userId){
+        console.error('User ID not found in localStorage');
+        navigate('/login');
+        return;
+      }
     try {
-      await axios.put('http://localhost:3000/api/auth/profile', values);
+      await axios.put(`https://expected-odella-8fe2e9ce.koyeb.app/user/update/${userId}`, values);
       alert('Profile updated successfully');
       navigate('/dashboard');
     } catch (error) {
@@ -78,7 +85,7 @@ const ProfileForm: React.FC = () => {
 
     try {
       await axios.post(
-        `https://expected-odella-8fe2e9ce.koyeb.app/user/${userId}/upload-profile-picture`,
+        `https://expected-odella-8fe2e9ce.koyeb.app/user/update/${userId}`,
         formData,
         {
           headers: {
