@@ -5,6 +5,7 @@ import LoginForm from './pages/login'
 import ProfileForm from './pages/profile'
 import HomePage from './pages/home'
 import ProductDetailPage from './pages/productDetail'
+import CategoryPage from './pages/category'
 
 function App() {
   return (
@@ -14,7 +15,8 @@ function App() {
         <Route path='/register' element ={<RegisterForm />} />
         <Route path='/login' element={<LoginForm />} />
         <Route path='/profile' element={<ProfileForm />} />
-        <Route path='/productDetail' element={<ProductDetailPage />} />
+        <Route path='//product/:productId' element={<ProductDetailPage />} />
+        <Route path="/category/:categorySlug" element={<CategoryPage />} />
       </Routes>
     </Router>
   );
