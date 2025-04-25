@@ -52,13 +52,13 @@ const CheckoutPage: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
 
-        const userData = userRes.data;
+        const userData = userRes?.data?.data;
 
         setAddress({
-          address: userData.address,
-          city: userData.city,
+          address: userData.address_street,
+          city: userData.address_city,
           pincode: userData.pincode || '-',
-          username: userData.username,
+          username: userData.name,
           phone: userData.phone,
           userId,
         });
