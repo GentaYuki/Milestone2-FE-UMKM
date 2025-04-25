@@ -75,6 +75,11 @@ const CheckoutPage: React.FC = () => {
     cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
 
   const handleProceedToPayment = () => {
+    if (cartItems.length === 0) {
+      alert('Your cart is empty.');
+      navigate('/home');
+      return;
+    }
     const total = getTotalAmount();
     localStorage.setItem('checkout_total', total.toString());
     navigate('/payment');
