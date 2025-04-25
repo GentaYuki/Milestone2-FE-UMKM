@@ -12,28 +12,21 @@ interface InputFieldProperty {
 const InputField: React.FC<InputFieldProperty> = ({ name, type, placeholder, icon }) => {
     const [field, meta] = useField(name);
 
-
+    const hasError = meta.touched && meta.error;
     return (
-    <div className="mb-4 relative">
+    <div className="relative">
+      <div className={`flex items-center border rounded-md px-3 py-2 ${hasError ? 'border-red-500' : 'border-gray-300'} bg-white`}>
+
+      {icon && <span className="text-gray-500 mr-2">{icon}</span>}
       <input
         {...field}
         id={name}
         type={type}
         placeholder={placeholder}
-        className={`w-full pl-10 pr-10 py-2 border rounded-md focus:outline-none ${
-            meta.touched && meta.error ? 'border-red-500' : 'border-gray-300'
-          }`}
+        className='w-full bg-transparent focus:outline-none text-sm text-left'
       />
-      {icon && (
-        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
-          {icon}
-        </span>
-      )}
-      
-      {meta.touched && meta.error && ( 
-        <p className='text-red-500 text-sm mt-1'>{meta.error}</p>
-      )}
-      
+      </div>
+      {hasError && <p className="text-red-500 text-xs mt-1 ml-1">{meta.error}</p>}
     </div>
     );
 };

@@ -9,8 +9,10 @@ const ProfileForm: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [initialValues, setInitialValues] = useState({
+    username:``,
     email: '',
     password: '',
+    profilePicture: '',
     phone: '',
     address: '',
     city: '',
@@ -23,8 +25,15 @@ const ProfileForm: React.FC = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
+      const userId = localStorage.getItem('user_id');
+
+      if (!userId){
+        console.error('User ID not found in localStorage');
+        navigate('/login');
+        return;
+      }
       try {
-        const response = await axios.get('http://localhost:3000/api/auth/profile');
+        const response = await axios.get('https://expected-odella-8fe2e9ce.koyeb.app/user/profile/' + userId);
         setInitialValues(response.data);
         setLoading(false);
       } catch (error) {
@@ -46,7 +55,45 @@ const ProfileForm: React.FC = () => {
     }
   };
 
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    if (!validTypes.includes(file.type)) {
+      alert('Only JPG, JPEG, and PNG files are allowed');
+      return;
+    }
+
+    const userId = localStorage.getItem('user_id');
+    const token = localStorage.getItem('token');
+
+    if (!userId || !token) {
+      alert('User not authenticated');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('profilePicture', file);
+
+    try {
+      await axios.post(
+        `https://expected-odella-8fe2e9ce.koyeb.app/user/${userId}/upload-profile-picture`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`,
+          },
+      });
+      window.location.reload();
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  };
+
   const ProfileSchema = Yup.object().shape({
+    username: Yup.string().required('username is required'),
     email: Yup.string().email('Invalid email').required('Email is required'),
     password: Yup.string().required('Password is required'),
     phone: Yup.string().required('Phone number is required'),
@@ -62,12 +109,15 @@ const ProfileForm: React.FC = () => {
   if (loading) return <p className="text-center mt-10">Loading...</p>;
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      <h2 className="text-center text-2xl font-bold mb-4">Profile</h2>
+    <div className="max-w-[375px] mx-auto px-4 py-6">
+      <button onClick={() => navigate(-1)} className="flex items-center text-sm text-gray-500 mb-4 gap-1"> <span className='text-2xl'>&larr;</span>
+      </button>
+
+      <h2 className="text-center text-2xl font-bold mb-6">Profile</h2>
 
       <div className="flex justify-center mb-4">
         <img
-          src="https://via.placeholder.com/80"
+          src={initialValues.profilePicture || 'https://via.placeholder.com/80'}
           alt="Avatar"
           className="w-20 h-20 rounded-full object-cover"
         />
@@ -79,30 +129,71 @@ const ProfileForm: React.FC = () => {
         onSubmit={handleSubmit}
         enableReinitialize 
       >
-        <Form className="space-y-4">
-          <div>
-            <h3 className="font-semibold mb-2">Personal Details</h3>
+        <Form className="space-y-5">
+          <section className='space-y-4 border-b pb-6 text-left'>
+            <h3 className="font-semibold mb-2 text-lg">Personal Details</h3>
+            <div>
+            <label htmlFor="username" className='block text-sm/6 font-medium text-gray-900'>Username</label>
+            <InputField name="username" type="text" placeholder="Username" />
+            </div>
+            <div>
+            <label htmlFor='email' className='block text-sm/6 font-medium text-gray-900'>Email</label>
             <InputField name="email" type="email" placeholder="Email address" />
+            </div>
+            <div>
+            <label htmlFor='password' className='block text-sm/6 font-medium text-gray-900'>Password</label>
             <InputField name="password" type="password" placeholder="Password" />
-          </div>
+            </div>
+            <div className="mt-2 text-sm text-blue-600 underline cursor-pointer hover:tetx-blue-800">
+                <label htmlFor="fileUpload" className="cursor-pointer">
+                  Change Profile Picture
+                </label>
+                <input id="fileUpload" type="file" accept=".jpg,.jpeg,.png" onChange={handleImageUpload} className="hidden"
+                />
+              </div>
+          </section>
 
-          <div>
-            <h3 className="font-semibold mb-2">Business Address Details</h3>
+          <section className='space-y-4 border-b pb-6 text-left'>
+            <h3 className="font-semibold mb-2 text-lg">Business Address Details</h3>
+            <div>
+            <label htmlFor='phone' className='block text-sm/6 font-medium text-gray-900'>Phone Number</label>
             <InputField name="phone" type="text" placeholder="Phone number" />
+            </div>
+            <div>
+            <label htmlFor='address' className='block text-sm/6 font-medium text-gray-900'>Address</label>
             <InputField name="address" type="text" placeholder="Address" />
+            </div>
+            <div>
+            <label htmlFor='city' className='block text-sm/6 font-medium text-gray-900'>City</label>
             <InputField name="city" type="text" placeholder="City" />
+            </div>
+            <div>
+            <label htmlFor='state' className='block text-sm/6 font-medium text-gray-900'>State</label>
             <InputField name="state" type="text" placeholder="State" />
+            </div>
+            <div>
+            <label htmlFor='country' className='block text-sm/6 font-medium text-gray-900'>Country</label>
             <InputField name="country" type="text" placeholder="Country" />
-          </div>
+            </div>
+          </section>
 
-          <div>
-            <h3 className="font-semibold mb-2">Bank Account Details</h3>
+          <section className='space-y-4 border-b pb-6 text-left'>
+            <h3 className="font-semibold mb-2 text-lg">Bank Account Details</h3>
+            <div> 
+            <label htmlFor='bankNumber' className='block text-sm/6 font-medium text-gray-900'>Bank Number</label>
             <InputField name="bankNumber" type="text" placeholder="Bank Number" />
+            </div>
+            <div>
+            <label htmlFor='accountName' className='block text-sm/6 font-medium text-gray-900'>Account Name</label>
             <InputField name="accountName" type="text" placeholder="Account Name" />
+            </div>
+            <div>
+            <label htmlFor='ifsc' className='block text-sm/6 font-medium text-gray-900'>IFSC</label>
             <InputField name="ifsc" type="text" placeholder="IFSC" />
-          </div>
+            </div>
+          </section>
 
-          <button type="submit" className="w-full bg-pink-600 text-white py-2 rounded-md">
+          <button type="submit" className="w-full bg-pink-600 text-white py-3 rounded-md font-semibold text-sm">
             Save
           </button>
         </Form>

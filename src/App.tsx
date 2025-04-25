@@ -6,6 +6,8 @@ import ProfileForm from './pages/profile'
 import HomePage from './pages/home'
 import ProductDetailPage from './pages/productDetail'
 import CategoryPage from './pages/category'
+import CheckoutPage from './pages/checkout'
+import PaymentPage from './pages/payment'
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
         <Route path='/profile' element={<ProfileForm />} />
         <Route path='//product/:productId' element={<ProductDetailPage />} />
         <Route path="/category/:categorySlug" element={<CategoryPage />} />
+        <Route path='/checkout' element={<CheckoutPage />} />
+        <Route path='/payment' element={<PaymentPage />} />
       </Routes>
     </Router>
   );
