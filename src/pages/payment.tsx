@@ -2,10 +2,10 @@ import React, { useState , useEffect } from 'react';
 import axios from 'axios';
 
 // import local images
-import BCAImg from '../assets/BCA.jpg';
-import BNIImg from '../assets/BNI.png';
-import BRIImg from '../assets/BRI.png';
-import GopayImg from '..assets/Gopay.jpg';
+import BCAImg from '../assets/image/BCA.jpg';
+import BNIImg from '../assets/image/BNI.png';
+import BRIImg from '../assets/image/BRI.png';
+import GopayImg from '..assets/image/Gopay.jpg';
 
 const paymentMethods = [
   { id: 'bca', label: 'BCA', image : BCAImg, last4: '1238' },
