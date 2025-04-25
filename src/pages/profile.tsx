@@ -91,7 +91,13 @@ const ProfileForm: React.FC = () => {
       console.error('Error updating profile:', error);
     }
   };
-
+  
+  const handleLogout = () => {
+      localStorage.removeItem('user_id');
+      localStorage.removeItem('access_token');
+      navigate('/login');
+    };
+  
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -231,6 +237,9 @@ const ProfileForm: React.FC = () => {
           </section>
 
           <button type="submit" className="w-full bg-pink-600 text-white py-3 rounded-md font-semibold text-sm">
+            Save
+          </button>
+          <button onClick={handleLogout} className="w-full bg-gray-600 text-white py-3 rounded-md font-semibold text-sm">
             Save
           </button>
         </Form>
