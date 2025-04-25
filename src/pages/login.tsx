@@ -34,11 +34,11 @@ const LoginForm : React.FC = () => {
             console.log ( response.data);
             const { data } = response.data;
 
-            if (data?.user?.user_id && data?.access_toke){
+            if (data?.user?.user_id && data?.access_token){
                 localStorage.setItem('user_id', data.user.user_id.toString());
                 localStorage.setItem('access_token', data.access_token);
             }
-            navigate('/dashboard');
+            navigate('/home');
         } catch (err: unknown) {
             if (axios.isAxiosError(err) && err.response) {
                 setError(err.response.data.message || 'Login failed');

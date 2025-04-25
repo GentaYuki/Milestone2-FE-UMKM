@@ -9,6 +9,21 @@ const ProductDetailPage: React.FC = () => {
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
     const [notification, setNotification] = useState<{show: boolean, message: string}>({show: false, message: ''});
+    const [userId, setUserId] = useState<number | null>(null);
+
+    // Get user ID from localStorage - PERSIS seperti di login page
+    useEffect(() => {
+        const storedUserId = localStorage.getItem('user_id');
+        console.log('user_id dari localStorage:', storedUserId); // Debug
+        
+        if (storedUserId) {
+            try {
+                setUserId(parseInt(storedUserId));
+            } catch (error) {
+                console.error("Gagal parsing user_id:", error);
+            }
+        }
+    }, []);
 
     useEffect(() => {
         const loadProduct = async () => {
@@ -18,7 +33,12 @@ const ProductDetailPage: React.FC = () => {
                 const productData = await fetchProductById(parseInt(productId));
                 setProduct(productData);
             } catch (error) {
-                console.error("Failed to load product:", error);
+                console.error("Gagal memuat produk:", error);
+                setNotification({
+                    show: true,
+                    message: 'Gagal memuat detail produk'
+                });
+                setTimeout(() => setNotification({show: false, message: ''}), 3000);
             } finally {
                 setLoading(false);
             }
@@ -28,13 +48,21 @@ const ProductDetailPage: React.FC = () => {
     }, [productId]);
 
     const addToCart = async () => {
-        if (!product) return;
+        if (!product || !userId) {
+            setNotification({
+                show: true,
+                message: 'Silakan login terlebih dahulu'
+            });
+            setTimeout(() => setNotification({show: false, message: ''}), 3000);
+            return;
+        }
         
         try {
-            const response = await fetch(`https://expected-odella-8fe2e9ce.koyeb.app/cart/1/add`, {
+            const response = await fetch(`https://expected-odella-8fe2e9ce.koyeb.app/cart/${userId}/add`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    // TIDAK ADA HEADER AUTHORIZATION
                 },
                 body: JSON.stringify({
                     product_id: product.product_id,
@@ -51,20 +79,15 @@ const ProductDetailPage: React.FC = () => {
                 message: `${product.name} berhasil ditambahkan ke keranjang!`
             });
 
-            // Sembunyikan notifikasi setelah 3 detik
-            setTimeout(() => {
-                setNotification({show: false, message: ''});
-            }, 3000);
+            setTimeout(() => setNotification({show: false, message: ''}), 3000);
 
         } catch (error) {
-            console.error("Error adding to cart:", error);
+            console.error("Error:", error);
             setNotification({
                 show: true,
-                message: 'Gagal menambahkan produk ke keranjang'
+                message: error instanceof Error ? error.message : 'Gagal menambahkan produk'
             });
-            setTimeout(() => {
-                setNotification({show: false, message: ''});
-            }, 3000);
+            setTimeout(() => setNotification({show: false, message: ''}), 3000);
         }
     };
 
@@ -72,7 +95,7 @@ const ProductDetailPage: React.FC = () => {
         return (
             <div className="bg-[#fdfdfd] flex flex-row justify-center w-full">
                 <div className="bg-[#fdfdfd] w-[375px] min-h-screen flex items-center justify-center">
-                    <p>Loading product...</p>
+                    <p>Memuat produk...</p>
                 </div>
             </div>
         );
@@ -82,7 +105,7 @@ const ProductDetailPage: React.FC = () => {
         return (
             <div className="bg-[#fdfdfd] flex flex-row justify-center w-full">
                 <div className="bg-[#fdfdfd] w-[375px] min-h-screen flex items-center justify-center">
-                    <p>Product not found</p>
+                    <p>Produk tidak ditemukan</p>
                 </div>
             </div>
         );
@@ -130,7 +153,7 @@ const ProductDetailPage: React.FC = () => {
                         <h1 className="text-xl font-bold">{product.name}</h1>
                         
                         <div className="flex items-center justify-between">
-                            <span className="text-2xl font-bold text-black-600">
+                            <span className="text-2xl font-bold text-blue-600">
                                 Rp {Number(product.price).toLocaleString('id-ID')}
                             </span>
                             <span className="text-sm text-gray-500">

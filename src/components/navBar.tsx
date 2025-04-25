@@ -19,7 +19,7 @@ const NavBar: React.FC = () => {
 
         {/* Cart Button */}
         <button 
-          onClick={() => navigate('/cart')} 
+          onClick={() => navigate('/checkout')} 
           className="flex flex-col items-center justify-center w-full text-gray-800"
         >
           <ShoppingCartIcon className="w-6 h-6" />
