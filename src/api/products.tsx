@@ -50,7 +50,7 @@ export interface ProductImage {
     }
   };
 
-  
+
 
   // Tambahkan fungsi ini di api/products.ts
 export const fetchProductById = async (id: number): Promise<Product> => {
@@ -67,7 +67,7 @@ export const fetchProductById = async (id: number): Promise<Product> => {
         throw new Error(data.message || 'Product not found')
       }
   
-      return data.data
+      return data.data[0];
     } catch (error) {
       console.error('Error fetching product:', error)
       throw error

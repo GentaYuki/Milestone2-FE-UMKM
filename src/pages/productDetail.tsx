@@ -133,7 +133,7 @@ const ProductDetailPage: React.FC = () => {
                 {/* Product Content */}
                 <div className="pt-16 pb-20 px-4">
                     {/* Product Image */}
-                    <div className="w-full h-64 mb-4 rounded-lg overflow-hidden bg-gray-100">
+                    <div className="w-72 h-40 mb-4 rounded-lg overflow-hidden bg-gray-100 mx-auto">
                         <img
                             className="w-full h-full object-cover"
                             alt={product.name}
