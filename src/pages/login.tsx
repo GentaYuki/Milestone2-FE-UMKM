@@ -14,7 +14,7 @@ interface LoginFormValues {
 
 const LoginSchema=Yup.object().shape({
     email: Yup.string().email('Invalid email').required('Email Required'),
-    password : Yup.string().min(6, 'Password must be at least 6 characters').required('Password Required'),
+    password: Yup.string().min(8, 'Password must be at least 8 characters').matches(/[A-Z]/, 'Password must contain at least one uppercase letter and number').matches(/\d/, 'Password must contain at least one number').required('Password is required'),
 })
 
 const LoginForm : React.FC = () => {
@@ -65,8 +65,8 @@ const LoginForm : React.FC = () => {
                     
                     {/*password */}
                     <div className='relative'>
-                    <InputField name='password' type='password' placeholder='Password' icon={<FiLock />} />
-                    <button type='button' className = 'absolute right-3 top-1/2 -translate-y-1/2 text-gray-500' onClick={() => setShowPassword(!showPassword)}>
+                    <InputField name='password' type={showPassword ? 'text' : 'password'} placeholder='Password' icon={<FiLock />}/>
+                    <button type='button' className = 'absolute right-3 top-3 text-gray-500' onClick={() => setShowPassword(!showPassword)}>
                         {showPassword ? <FiEye /> : <FiEyeOff />}
                     </button>
                     </div>
