@@ -127,7 +127,7 @@ const HomePage: React.FC = () => {
                 <p className="[font-family:'Montserrat',Helvetica]">No products available</p>
               </div>
             ) : (
-              <div className="flex flex-wrap gap-3 pb-4">
+              <div className="flex flex-wrap gap-3 pb-12">
                 {displayedProducts.map((product) => (
                   <div 
                     key={product.product_id}
