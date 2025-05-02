@@ -8,6 +8,7 @@ import BNIImg from '../assets/image/BNI.png';
 import BRIImg from '../assets/image/BRI.png';
 import GopayImg from '../assets/image/Gopay.jpg';
 
+
 const paymentMethods = [
   { id: 'bca', label: 'BCA', image : BCAImg, last4: '1238' },
   { id: 'bni', label: 'BNI', image: BNIImg, last4: '2219' },
