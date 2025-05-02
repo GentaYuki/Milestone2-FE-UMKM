@@ -1,20 +1,24 @@
 import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import { FiUser, FiLock , FiEye, FiEyeOff} from 'react-icons/fi';
+import { FiUser, FiLock, FiEye, FiEyeOff, FiMail} from 'react-icons/fi';
 import InputField from '../components/inputField';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 
 interface RegisterFormValues {
+    userName : string;
     email: string;
+    gender : string;
     password: string;
     confirmPassword: string;
 }
-
+{/* validation schema */}
 const RegisterSchema = Yup.object().shape({
+    userName: Yup.string().required('User Name Required'),
     email: Yup.string().email('Invalid email').required('Email Required'),
+    gender: Yup.string().oneOf(['male', 'female'], 'Please select gender').required('Gender Required'),
     password: Yup.string().min(8, 'Password must be at least 8 characters').matches(/[A-Z]/, 'Password must contain at least one uppercase letter and number').matches(/\d/, 'Password must contain at least one number').required('Password is required'),
     confirmPassword : Yup.string().oneOf([Yup.ref('password')], 'Passwords must match').required('Confirm Password Required'),
 });
@@ -27,15 +31,17 @@ const RegisterForm : React.FC = () => {
     
     {/* initial value for Register */}
     const InitialValues = {
+        userName: '',
         email: '',
+        gender: '',
         password: '',
         confirmPassword: '',
     };
 
     const handleSubmit = async (values : RegisterFormValues) => {
         try {
-            const { email, password } = values;
-            const response = await axios.post('https://expected-odella-8fe2e9ce.koyeb.app/user/register', {email, password});
+            const { userName, email, password, gender } = values;
+            const response = await axios.post('https://expected-odella-8fe2e9ce.koyeb.app/user/register', {userName, email, password, gender});
             console.log ( response.data);
             navigate('/login');
         } catch (err: unknown) {
@@ -58,21 +64,27 @@ const RegisterForm : React.FC = () => {
                 <Form className = 'w-full max-w-[375px] space-y-5'>
                     <h2 className = 'text-3xl font-bold text-center'>Create an account</h2>
 
+                {/* Username */}
+                <InputField name= 'userName' type='text' placeholder='Username' icon={<FiUser />} />
+
                 {/* Email */}
-                <InputField name= 'email' type='email' placeholder='Email' icon={<FiUser />} />
+                <InputField name= 'email' type='email' placeholder='Email' icon={<FiMail />} />
+
+                {/* Gender */}
+                <InputField name= 'gender' type='select' placeholder='Select Gender' options={[{ label: 'Male', value: 'male' }, { label: 'Female', value: 'female' }]} icon={<FiUser />} />
 
                 {/*Password */}
                 <div className='relative'>
-                <InputField name= 'password' type={ShowPassword ? 'text' : 'password'} placeholder='Password' icon={<FiLock />} />
-                <button type='button' className = 'absolute right-3 top-1/2 -translate-y-1/2 text-gray-500' onClick={() => setShowPassword(!ShowPassword)}>
+                <InputField name= 'password' type={ShowPassword ? 'text' : 'password'} placeholder='Password' icon={<FiLock />}/>
+                <button type='button' className = 'absolute right-3 top-3 text-gray-500' onClick={() => setShowPassword(!ShowPassword)}>
                     {ShowPassword ? <FiEye /> : <FiEyeOff />}
                 </button>
 
                 {/*Confirm Password */}
                 </div>
                 <div className ='relative'>
-                <InputField name= 'confirmPassword' type={ShowConfirmPassword ? 'text' : 'password'} placeholder='Confirm Password' icon={<FiLock />} />
-                <button type='button' className = 'absolute right-3 top-1/2 -translate-y-1/2 text-gray-500' onClick={() => setShowConfirmPassword(!ShowConfirmPassword)}>
+                <InputField name= 'confirmPassword' type={ShowConfirmPassword ? 'text' : 'password'} placeholder='Confirm Password' icon={<FiLock />}/>
+                <button type='button' className = 'absolute right-3 top-3 text-gray-500' onClick={() => setShowConfirmPassword(!ShowConfirmPassword)}>
                     {ShowConfirmPassword ? <FiEye/> : <FiEyeOff />}
                 </button>
                 </div>
