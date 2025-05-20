@@ -16,6 +16,12 @@ export interface ProductImage {
     status: string;
     stock: number;
   }
+
+  interface SingleProductResponse {
+  data: Product;
+  message: string;
+  status: string;
+}
   
   interface ApiResponse {
     data: Product[];
@@ -61,13 +67,13 @@ export const fetchProductById = async (id: number): Promise<Product> => {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
   
-      const data: ApiResponse = await response.json()
+      const data: SingleProductResponse = await response.json()
       
       if (data.status !== 'success' || !data.data) {
         throw new Error(data.message || 'Product not found')
       }
   
-      return data.data[0];
+      return data.data;
     } catch (error) {
       console.error('Error fetching product:', error)
       throw error

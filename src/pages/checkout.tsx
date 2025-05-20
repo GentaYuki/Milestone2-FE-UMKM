@@ -69,7 +69,7 @@ const CheckoutPage: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [navigate]);
 
   const getTotalAmount = () =>
     cartItems.reduce((total, item) => total + item.price * item.quantity, 0);

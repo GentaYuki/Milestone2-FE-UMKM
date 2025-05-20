@@ -8,6 +8,7 @@ import ProductDetailPage from './pages/productDetail'
 import CategoryPage from './pages/category'
 import CheckoutPage from './pages/checkout'
 import PaymentPage from './pages/payment'
+import ChangePasswordForm from './pages/changePass'
 
 function App() {
   return (
@@ -17,10 +18,11 @@ function App() {
         <Route path='/register' element ={<RegisterForm />} />
         <Route path='/login' element={<LoginForm />} />
         <Route path='/profile' element={<ProfileForm />} />
-        <Route path='//product/:productId' element={<ProductDetailPage />} />
-        <Route path="/category/:categorySlug" element={<CategoryPage />} />
+        <Route path='/product/:productId' element={<ProductDetailPage />} />
+        <Route path='/category/:categorySlug' element={<CategoryPage />} />
         <Route path='/checkout' element={<CheckoutPage />} />
         <Route path='/payment' element={<PaymentPage />} />
+        <Route path='/changepassword' element={<ChangePasswordForm />} />
       </Routes>
     </Router>
   );

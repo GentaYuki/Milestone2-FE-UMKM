@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
-import InputField from '../components/inputField';
+import { TextInputField } from '../components/InputField2';
 import axios from 'axios';
+import { SubmitButton, LogoutButton } from '../components/button';
+import { Accordion, AccordionButton, AccordionPanel, AccordionItem, AccordionIcon, Box } from '@chakra-ui/react';
 
 const ProfileForm: React.FC = () => {
   const navigate = useNavigate();
@@ -11,7 +13,7 @@ const ProfileForm: React.FC = () => {
   const [initialValues, setInitialValues] = useState({
     name: '',
     email: '',
-    password: '',
+    gender : '',
     profilePicture: '',
     phone: '',
     address: '',
@@ -41,7 +43,7 @@ const ProfileForm: React.FC = () => {
           setInitialValues({
             name: user.name || '',
             email: user.email || '',
-            password: user.password ||'',
+            gender: user.gender || '',
             profilePicture: user.user_image || '',
             phone: user.phone || '',
             address: user.address_street || '',
@@ -61,10 +63,11 @@ const ProfileForm: React.FC = () => {
     };
 
     fetchProfile();
-  }, []);
+  }, [navigate]);
 
   const handleSubmit = async (values: typeof initialValues) => {
     const userId = localStorage.getItem('user_id');
+    console.log (userId);
 
       if (!userId){
         console.error('User ID not found in localStorage');
@@ -99,6 +102,10 @@ const ProfileForm: React.FC = () => {
     localStorage.removeItem('access_token');
     navigate('/login');
   };
+
+  const changePassword = () => {
+    navigate('/changepassword');
+  }
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -167,6 +174,13 @@ const ProfileForm: React.FC = () => {
           className="w-20 h-20 rounded-full object-cover"
         />
       </div>
+      <div className="mb-2 text-sm text-blue-600 underline cursor-pointer hover:tetx-blue-800">
+                <label htmlFor="fileUpload" className="cursor-pointer">
+                  Change Profile Picture
+                </label>
+                <input id="fileUpload" type="file" accept=".jpg,.jpeg,.png" onChange={handleImageUpload} className="hidden"
+                />
+      </div>
 
       <Formik
         initialValues={initialValues}
@@ -175,75 +189,61 @@ const ProfileForm: React.FC = () => {
         enableReinitialize 
       >
         <Form className="space-y-5">
-          <section className='space-y-4 border-b pb-6 text-left'>
-            <h3 className="font-semibold mb-2 text-lg">Personal Details</h3>
-            <div>
-            <label htmlFor="username" className='block text-sm/6 font-medium text-gray-900'>Username</label>
-            <InputField name="name" type="text" placeholder="Username" />
+            <Accordion defaultIndex={[0]} allowMultiple>
+              <AccordionItem>
+            <h3 className="font-semibold mb-2 text-lg">
+              <AccordionButton>
+                <Box as='span' flex='1' textAlign='left'>Personal Details</Box>
+              <AccordionIcon/>
+              </AccordionButton>
+            </h3>
+            <AccordionPanel pb={4}>
+            <TextInputField name="name" label="Username:" placeholder="Username" />
+            {/* <label htmlFor='email' className='block text-sm/6 font-medium text-gray-900'>Email</label>
+            <InputField name="email" type="email" placeholder="Email address" /> */}
+            <TextInputField name="email" label="Email:" placeholder="Email" />
+            <div className="mb-2 mt-2">
+              <button onClick={changePassword} className="text-sm text-blue-600 underline cursor-pointer hover:text-blue-800">
+                Change Password
+              </button>
             </div>
-            <div>
-            <label htmlFor='email' className='block text-sm/6 font-medium text-gray-900'>Email</label>
-            <InputField name="email" type="email" placeholder="Email address" />
-            </div>
-            <div>
-            <label htmlFor='password' className='block text-sm/6 font-medium text-gray-900'>Password</label>
-            <InputField name="password" type="password" placeholder="Password" />
-            </div>
-            <div className="mt-2 text-sm text-blue-600 underline cursor-pointer hover:tetx-blue-800">
-                <label htmlFor="fileUpload" className="cursor-pointer">
-                  Change Profile Picture
-                </label>
-                <input id="fileUpload" type="file" accept=".jpg,.jpeg,.png" onChange={handleImageUpload} className="hidden"
-                />
-              </div>
-          </section>
+            </AccordionPanel>
+          </AccordionItem>          
 
-          <section className='space-y-4 border-b pb-6 text-left'>
-            <h3 className="font-semibold mb-2 text-lg">Business Address Details</h3>
-            <div>
-            <label htmlFor='phone' className='block text-sm/6 font-medium text-gray-900'>Phone Number</label>
-            <InputField name="phone" type="text" placeholder="Phone number" />
-            </div>
-            <div>
-            <label htmlFor='address' className='block text-sm/6 font-medium text-gray-900'>Address</label>
-            <InputField name="address" type="text" placeholder="Address" />
-            </div>
-            <div>
-            <label htmlFor='city' className='block text-sm/6 font-medium text-gray-900'>City</label>
-            <InputField name="city" type="text" placeholder="City" />
-            </div>
-            <div>
-            <label htmlFor='state' className='block text-sm/6 font-medium text-gray-900'>State</label>
-            <InputField name="state" type="text" placeholder="State" />
-            </div>
-            <div>
-            <label htmlFor='country' className='block text-sm/6 font-medium text-gray-900'>Country</label>
-            <InputField name="country" type="text" placeholder="Country" />
-            </div>
-          </section>
+          <AccordionItem>
+            <h3 className="font-semibold mb-2 text-lg">
+              <AccordionButton>
+                <Box as='span' flex='1' textAlign='left'>Business Address Details</Box>
+              <AccordionIcon/>
+              </AccordionButton>
+              </h3>
+            <AccordionPanel pb={4}>
+            <TextInputField name="phone" label="Phone Number:" placeholder="Phone Number" />
+            <TextInputField name="address" label="Address:" placeholder="Address" />
+            <TextInputField name="city" label="City:" placeholder="City" />
+            <TextInputField name="state" label="State:" placeholder="State" />
+            <TextInputField name="country" label="Country:" placeholder="Country" />
+            </AccordionPanel>
+          </AccordionItem>
+          
+          <AccordionItem>
+            <h3 className="font-semibold mb-2 text-lg">
+              <AccordionButton>
+                <Box as='span' flex='1' textAlign='left'>Bank Account Details</Box>
+              <AccordionIcon/>
+              </AccordionButton>
+            </h3>
+            <AccordionPanel pb={4}>            
+            <TextInputField name="bankNumber" label="Bank Number:" placeholder="Bank Number" />
+            <TextInputField name="accountName" label="Account Name:" placeholder="Account Name" />
+            <TextInputField name="ifsc" label="IFSC Code:" placeholder="IFSC Code" />
+            </AccordionPanel>
+          </AccordionItem>
+          </Accordion>
 
-          <section className='space-y-4 border-b pb-6 text-left'>
-            <h3 className="font-semibold mb-2 text-lg">Bank Account Details</h3>
-            <div> 
-            <label htmlFor='bankNumber' className='block text-sm/6 font-medium text-gray-900'>Bank Number</label>
-            <InputField name="bankNumber" type="text" placeholder="Bank Number" />
-            </div>
-            <div>
-            <label htmlFor='accountName' className='block text-sm/6 font-medium text-gray-900'>Account Name</label>
-            <InputField name="accountName" type="text" placeholder="Account Name" />
-            </div>
-            <div>
-            <label htmlFor='ifsc' className='block text-sm/6 font-medium text-gray-900'>IFSC</label>
-            <InputField name="ifsc" type="text" placeholder="IFSC" />
-            </div>
-          </section>
+          <SubmitButton>Save</SubmitButton>
 
-          <button type="submit" className="w-full bg-pink-600 text-white py-3 rounded-md font-semibold text-sm">
-            Save
-          </button>
-          <button onClick={handleLogout} className="w-full bg-gray-600 text-white py-3 rounded-md font-semibold text-sm">
-            Logout
-          </button>
+          <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
         </Form>
       </Formik>
     </div>

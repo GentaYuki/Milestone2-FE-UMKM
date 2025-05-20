@@ -1,24 +1,23 @@
 import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import { FiUser, FiLock, FiEye, FiEyeOff, FiMail} from 'react-icons/fi';
-import InputField from '../components/inputField';
+import { FiUser, FiLock, FiMail} from 'react-icons/fi';
+import { TextInputField, PasswordInputField } from '../components/InputField2'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { SubmitButton } from '../components/button';
 
 
 interface RegisterFormValues {
-    userName : string;
+    name : string;
     email: string;
-    gender : string;
     password: string;
     confirmPassword: string;
 }
 {/* validation schema */}
 const RegisterSchema = Yup.object().shape({
-    userName: Yup.string().required('User Name Required'),
+    name: Yup.string().required('User Name Required'),
     email: Yup.string().email('Invalid email').required('Email Required'),
-    gender: Yup.string().oneOf(['male', 'female'], 'Please select gender').required('Gender Required'),
     password: Yup.string().min(8, 'Password must be at least 8 characters').matches(/[A-Z]/, 'Password must contain at least one uppercase letter and number').matches(/\d/, 'Password must contain at least one number').required('Password is required'),
     confirmPassword : Yup.string().oneOf([Yup.ref('password')], 'Passwords must match').required('Confirm Password Required'),
 });
@@ -26,22 +25,19 @@ const RegisterSchema = Yup.object().shape({
 const RegisterForm : React.FC = () => {
     const navigate = useNavigate();
     const [error, setError] = useState<string>('');
-    const [ShowPassword, setShowPassword] = useState(false);
-    const [ShowConfirmPassword, setShowConfirmPassword] = useState(false);
     
     {/* initial value for Register */}
     const InitialValues = {
-        userName: '',
+        name: '',
         email: '',
-        gender: '',
         password: '',
         confirmPassword: '',
     };
 
     const handleSubmit = async (values : RegisterFormValues) => {
         try {
-            const { userName, email, password, gender } = values;
-            const response = await axios.post('https://expected-odella-8fe2e9ce.koyeb.app/user/register', {userName, email, password, gender});
+            const { name, email, password} = values;
+            const response = await axios.post('https://expected-odella-8fe2e9ce.koyeb.app/user/register', {name, email, password});
             console.log ( response.data);
             navigate('/login');
         } catch (err: unknown) {
@@ -65,35 +61,22 @@ const RegisterForm : React.FC = () => {
                     <h2 className = 'text-3xl font-bold text-center'>Create an account</h2>
 
                 {/* Username */}
-                <InputField name= 'userName' type='text' placeholder='Username' icon={<FiUser />} />
+                <TextInputField name='name' type='text' placeholder='User Name' icon={<FiUser color='gray' />} />
 
                 {/* Email */}
-                <InputField name= 'email' type='email' placeholder='Email' icon={<FiMail />} />
-
-                {/* Gender */}
-                <InputField name= 'gender' type='select' placeholder='Select Gender' options={[{ label: 'Male', value: 'male' }, { label: 'Female', value: 'female' }]} icon={<FiUser />} />
+                <TextInputField name='email' type='email' placeholder='Email' icon={<FiMail color='gray' />} />
 
                 {/*Password */}
-                <div className='relative'>
-                <InputField name= 'password' type={ShowPassword ? 'text' : 'password'} placeholder='Password' icon={<FiLock />}/>
-                <button type='button' className = 'absolute right-3 top-3 text-gray-500' onClick={() => setShowPassword(!ShowPassword)}>
-                    {ShowPassword ? <FiEye /> : <FiEyeOff />}
-                </button>
+                <PasswordInputField name='password' type='password' placeholder='Password' icon={<FiLock color='gray' />} />
 
                 {/*Confirm Password */}
-                </div>
-                <div className ='relative'>
-                <InputField name= 'confirmPassword' type={ShowConfirmPassword ? 'text' : 'password'} placeholder='Confirm Password' icon={<FiLock />}/>
-                <button type='button' className = 'absolute right-3 top-3 text-gray-500' onClick={() => setShowConfirmPassword(!ShowConfirmPassword)}>
-                    {ShowConfirmPassword ? <FiEye/> : <FiEyeOff />}
-                </button>
-                </div>
+                <PasswordInputField name='confirmPassword' type='password' placeholder='Confirm Password' icon={<FiLock color='gray' />} />
 
                 <p className='text-xs text-gray-500 text-center px-2'>By clicking the <span className='text-pink-600 font-medium'> Register </span>button, you agree to the public offer</p>
 
-                <button type='submit' className='w-full bg-pink-600 text-white py-2 rounded-md text-sm font-semibold' disabled={isSubmitting}>
-                    {isSubmitting ? 'Registering...' : 'Register'}
-                </button>
+                <SubmitButton isLoading={isSubmitting} disabled={isSubmitting} loadingText='Registering...'>
+                    Register
+                </SubmitButton>
                 {error && <p className ='text-red-500 text-sm text-center'>{error}</p>}
                 
                 <p className='text-center text-sm text-gray-700'>

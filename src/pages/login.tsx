@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
-import InputField from '../components/inputField';
+import { TextInputField, PasswordInputField } from '../components/InputField2'
 import axios from 'axios';
-import { FiUser, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiUser, FiLock } from 'react-icons/fi';
+import { SubmitButton } from '../components/button';
 
 
 interface LoginFormValues {
@@ -20,13 +21,20 @@ const LoginSchema=Yup.object().shape({
 const LoginForm : React.FC = () => {
     const navigate = useNavigate();
     const [error, setError] = useState<string>('');
-    const [showPassword, setShowPassword] = useState(false);
 
     {/* initial value for login */}
     const InitialValues = {
         email :'',
         password: ''
     }
+
+    useEffect(() => {
+        const user_id = localStorage.getItem('user_id');
+        const access_token = localStorage.getItem('access_token');
+        if (user_id && access_token) {
+            navigate('/home');
+        }
+    }, [navigate]);
 
     const handleSubmit = async (values : LoginFormValues) => {
         try {
@@ -61,19 +69,14 @@ const LoginForm : React.FC = () => {
                         <h2 className = 'text-3xl font-bold text-center'>Welcome Back!</h2>
 
                     {/* Email */}
-                    <InputField name='email' type='email' placeholder='Email' icon={<FiUser />} />
+                    <TextInputField name='email' placeholder='Enter Your Email' icon={<FiUser color='gray'/>}/>
                     
                     {/*password */}
-                    <div className='relative'>
-                    <InputField name='password' type={showPassword ? 'text' : 'password'} placeholder='Password' icon={<FiLock />}/>
-                    <button type='button' className = 'absolute right-3 top-3 text-gray-500' onClick={() => setShowPassword(!showPassword)}>
-                        {showPassword ? <FiEye /> : <FiEyeOff />}
-                    </button>
-                    </div>
+                    <PasswordInputField name='password' placeholder='Enter Your Password' icon={<FiLock color='gray'/>}/>
                     
-                    <button type = 'submit' className = 'w-full bg-pink-600 text-white py-3 rounded-md text-sm font-semibold' disabled={isSubmitting}>
-                        {isSubmitting? 'Logging in...' : 'Login'}
-                    </button>
+                    <SubmitButton isLoading={isSubmitting} disabled={isSubmitting} loadingText='Logging in..'>
+                        Login
+                    </SubmitButton>
                     {error && <p className='text-red-500 text-sm text-center'>{error}</p> }
 
                     <p className = 'text-center text-sm mt-6 text-gray-700'> Create An Account <a href='/register' className = 'text-pink-600 font-medium'> Sign Up</a></p>
