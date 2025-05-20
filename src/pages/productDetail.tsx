@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import NavBar from '../components/navBar';
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { fetchProductById, Product } from '../api/products';
 import { SubmitButton , BackButton} from "../components/button";
-import { Card, CardHeader, CardBody, CardFooter } from '@chakra-ui/react'
+import { Card, CardBody, CardFooter , useToast, Image, Box, Stack, Heading, Text, Divider, Flex} from '@chakra-ui/react'
 
 const ProductDetailPage: React.FC = () => {
     const { productId } = useParams<{ productId: string }>();
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
-    const [notification, setNotification] = useState<{show: boolean, message: string}>({show: false, message: ''});
     const [userId, setUserId] = useState<number | null>(null);
+    const toast = useToast();
 
     // Get user ID from localStorage - PERSIS seperti di login page
     useEffect(() => {
@@ -36,24 +36,26 @@ const ProductDetailPage: React.FC = () => {
             })
             .catch((error) => {
                 console.error("Gagal memuat produk:", error);
-                setNotification({
-                    show: true,
-                    message: 'Gagal memuat detail produk',
-                });
-                setTimeout(() => setNotification({ show: false, message: '' }), 3000);
+                toast({
+                title: 'Gagal memuat detail product',
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+                });;
             })
             .finally(() => {
                 setLoading(false);
             });
-    }, [productId]);
+    }, [productId, toast]);
 
     const addToCart = () => {
         if (!product || !userId) {
-            setNotification({
-                show: true,
-                message: 'Silakan login terlebih dahulu',
-            });
-            setTimeout(() => setNotification({ show: false, message: '' }), 3000);
+            toast({
+                title: 'Silahkan Login Terlebih Dahulu',
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+                });
             return;
         }
 
@@ -74,19 +76,21 @@ const ProductDetailPage: React.FC = () => {
                 return response.json(); // optional: if you need response content
             })
             .then(() => {
-                setNotification({
-                    show: true,
-                    message: `${product.name} berhasil ditambahkan ke keranjang!`,
+                toast({
+                title: `${product.name} berhasil ditambahkan ke keranjang`,
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
                 });
-                setTimeout(() => setNotification({ show: false, message: '' }), 3000);
             })
             .catch((error) => {
                 console.error("Error:", error);
-                setNotification({
-                    show: true,
-                    message: error instanceof Error ? error.message : 'Gagal menambahkan produk',
+                toast({
+                title: 'Gagal menambahkan ke keranjang',
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
                 });
-                setTimeout(() => setNotification({ show: false, message: '' }), 3000);
             });
     };
 
@@ -111,25 +115,19 @@ const ProductDetailPage: React.FC = () => {
     }
 
     return (
-        <div className="bg-[#fdfdfd] flex flex-row justify-center w-full">
-            <div className="bg-[#fdfdfd] w-[375px] min-h-screen relative">
+         <Box bg="gray.50" minH="100vh" maxW="375px" mx="auto" position="relative" px={4} pb={24}>
                 {/* Back Button */}
                 <BackButton top={5} left={5} />
 
-                {/* Notification */}
-                {notification.show && (
-                    <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg z-50 max-w-[90%]">
-                        {notification.message}
-                    </div>
-                )}
-
+            <Card borderRadius="xl" boxShadow="md">
+                <CardBody>
                 {/* Product Content */}
-                <div className="pt-16 pb-20 px-4">
                     {/* Product Image */}
-                    <div className="w-72 h-40 mb-4 rounded-lg overflow-hidden bg-gray-100 mx-auto">
-                        <img
-                            className="w-full h-full object-cover"
+                        <Image
+                            mt={10}
                             alt={product.name}
+                            borderRadius={"md"}
+                            objectFit={"cover"}
                             src={
                                 product.product_images[0]?.image_url || 
                                 "https://img.freepik.com/premium-vector/vector-illustration-about-concept-no-items-found-no-results-found_675567-6665.jpg?semt=ais_hybrid&w=740"
@@ -139,45 +137,53 @@ const ProductDetailPage: React.FC = () => {
                                 target.src = "https://img.freepik.com/premium-vector/vector-illustration-about-concept-no-items-found-no-results-found_675567-6665.jpg?semt=ais_hybrid&w=740";
                             }}
                         />
-                    </div>
+                    
 
                     {/* Product Info */}
-                    <div className="space-y-4">
-                        <h1 className="text-xl font-bold">{product.name}</h1>
+                    <Stack mt={4} spacing={2} textAlign={"left"}>
+                        <Heading size="md">{product.name}</Heading>
                         
-                        <div className="flex items-center justify-between">
+                        {/* <div className="flex items-center justify-between">
                             <span className="text-2xl font-bold text-blue-600">
                                 Rp {Number(product.price).toLocaleString('id-ID')}
                             </span>
-                            <span className="text-sm text-gray-500">
+                            {/* <span className="text-sm text-gray-500">
                                 Stock: {product.stock}
-                            </span>
-                        </div>
-
-                        <div>
+                            </span> */}
+                        {/* </div> */}
+                        <Text fontWeight='bold' fontSize='sm' color='gray.700'>Category : {product.category}</Text>
+                        <Text color="blue.600" fontWeight="bold">Rp {Number(product.price).toLocaleString('id-ID')}</Text>
+                        
+                        <Divider/>
+                        <Text fontWeight='bold' color='gray.700'>{product.shop_id}</Text>
+                        <Divider/>
+                        <Text fontWeight="semibold">Description</Text>
+                        <Text fontSize='sm' color='gray.600'>{product.description}</Text>
+                        {/* <div>
                             <h2 className="font-semibold">Description</h2>
                             <p className="mt-1 text-gray-700 line-clamp-3">
                                 {product.description}
                             </p>
-                        </div>
+                        </div> */}
 
-                        <div>
+                        {/* <div>
                             <h2 className="font-semibold">Category</h2>
                             <p className="mt-1 text-gray-700 capitalize">
                                 {product.category}
                             </p>
-                        </div>
-                    </div>
-
+                        </div> */}
+                    </Stack>
+                </CardBody>
+                <Divider/>
+                <CardFooter>
+                    <Flex justify="center" width="100%">
                     {/* Add to Cart Button */}
-                    <div className="fixed bottom-16 left-0 right-0 px-4 max-w-[375px] mx-auto">
                         <SubmitButton onClick={addToCart}>Add to Cart</SubmitButton>
-                    </div>
-                </div>
-
+                    </Flex>
+                </CardFooter>
+            </Card>
                 <NavBar />
-            </div>
-        </div>
+        </Box>
     );
 };
 
