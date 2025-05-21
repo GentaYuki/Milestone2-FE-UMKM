@@ -79,19 +79,18 @@ const RegisterForm : React.FC = () => {
                 <PasswordInputField name='confirmPassword' type='password' placeholder='Confirm Password' icon={<FiLock color='gray' />} />
 
                 <p className='text-xs text-gray-500 text-center px-2'>By clicking the <span className='text-pink-600 font-medium'> Register </span>button, you agree to the public offer</p>
-                </CardBody>
-
-                <CardFooter flexDirection="column" textAlign="center" gap={2}>
-
-                
-
                 <SubmitButton isLoading={isSubmitting} disabled={isSubmitting} loadingText='Registering...'>
                     Register
                 </SubmitButton>
                 {error && <p className ='text-red-500 text-sm text-center'>{error}</p>}
                 
+                </CardBody>
+
+                <CardFooter flexDirection="column" textAlign="center" mt='10'>
+
+                
                 <p className='text-center text-sm text-gray-700'>
-                    I Already Have an Account <a href = '/login' className = 'text-pink-600 font-medium'>Login</a>
+                    I Already Have an Account, <a href = '/login' className = 'text-pink-600 font-medium'>Login</a>
                 </p>
                 </CardFooter>
             </Form>

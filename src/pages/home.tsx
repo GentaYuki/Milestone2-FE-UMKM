@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import NavBar from '../components/navBar'
 import { fetchProducts, Product } from '../api/products'
-import { Card, CardBody, Box, Divider, Text, Image } from '@chakra-ui/react'
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate()
