@@ -6,6 +6,7 @@ import { TextInputField, PasswordInputField } from '../components/InputField2'
 import axios from 'axios';
 import { FiUser, FiLock } from 'react-icons/fi';
 import { SubmitButton } from '../components/button';
+import { Card, CardHeader, CardBody, CardFooter, Heading, Flex} from '@chakra-ui/react'
 
 
 interface LoginFormValues {
@@ -57,16 +58,20 @@ const LoginForm : React.FC = () => {
     };
 
     return (
-        <div className='flex justify-center items-center min-h-screen px-4 bg-white'>
+       <Flex minH="100vh" align="center" justify="center" bgPosition={'center'} px={4}>
+            <Card maxW="sm" w="full" boxShadow="lg" borderRadius="xl">
+                <CardHeader textAlign="center">
+                    <Heading size="lg">Welcome Back!</Heading>
+                </CardHeader>
+
             <Formik
             initialValues={InitialValues}
             validationSchema = {LoginSchema}
             onSubmit={handleSubmit}>
 
             {({ isSubmitting }) => (
-            
-                <Form className='w-full max-w-[375px] space-y-5'>
-                        <h2 className = 'text-3xl font-bold text-center'>Welcome Back!</h2>
+            <Form>
+                <CardBody display="flex" flexDirection="column" gap={4}>
 
                     {/* Email */}
                     <TextInputField name='email' placeholder='Enter Your Email' icon={<FiUser color='gray'/>}/>
@@ -78,12 +83,15 @@ const LoginForm : React.FC = () => {
                         Login
                     </SubmitButton>
                     {error && <p className='text-red-500 text-sm text-center'>{error}</p> }
-
+                </CardBody>
+                <CardFooter flexDirection="column" textAlign="center" gap={2}>
                     <p className = 'text-center text-sm mt-6 text-gray-700'> Create An Account <a href='/register' className = 'text-pink-600 font-medium'> Sign Up</a></p>
+                </CardFooter>
                 </Form>
             )}
             </Formik>
-        </div>
+        </Card>
+    </Flex>
     );
 };
 

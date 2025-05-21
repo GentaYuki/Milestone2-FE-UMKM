@@ -6,6 +6,7 @@ import { TextInputField, PasswordInputField } from '../components/InputField2'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { SubmitButton } from '../components/button';
+import { Card, CardHeader, CardBody, CardFooter, Heading, Flex} from '@chakra-ui/react'
 
 
 interface RegisterFormValues {
@@ -50,15 +51,20 @@ const RegisterForm : React.FC = () => {
     };
 
     return (
-        <div className='flex justify-center items-center min-h-screen px-4 bg-white'>
+        <Flex minH='100vh' align='center' justify='center' bgPosition={'center'} px={4}>
+            <Card maxW='sm' w='full' boxShadow='lg' borderRadius ='md'>
+                <CardHeader textAlign='center'>
+                    <Heading size='lg'>Create Account</Heading>
+                </CardHeader>
+
             <Formik
             initialValues={InitialValues}
             validationSchema={RegisterSchema}
             onSubmit={handleSubmit} >
 
             {({ isSubmitting }) => (
-                <Form className = 'w-full max-w-[375px] space-y-5'>
-                    <h2 className = 'text-3xl font-bold text-center'>Create an account</h2>
+            <Form>
+                <CardBody display='flex' flexDir='column' gap='4'>
 
                 {/* Username */}
                 <TextInputField name='name' type='text' placeholder='User Name' icon={<FiUser color='gray' />} />
@@ -73,6 +79,11 @@ const RegisterForm : React.FC = () => {
                 <PasswordInputField name='confirmPassword' type='password' placeholder='Confirm Password' icon={<FiLock color='gray' />} />
 
                 <p className='text-xs text-gray-500 text-center px-2'>By clicking the <span className='text-pink-600 font-medium'> Register </span>button, you agree to the public offer</p>
+                </CardBody>
+
+                <CardFooter flexDirection="column" textAlign="center" gap={2}>
+
+                
 
                 <SubmitButton isLoading={isSubmitting} disabled={isSubmitting} loadingText='Registering...'>
                     Register
@@ -82,10 +93,12 @@ const RegisterForm : React.FC = () => {
                 <p className='text-center text-sm text-gray-700'>
                     I Already Have an Account <a href = '/login' className = 'text-pink-600 font-medium'>Login</a>
                 </p>
+                </CardFooter>
             </Form>
          )}
             </Formik>
-        </div>
+        </Card>
+    </Flex>
     );
 };
 export default RegisterForm
