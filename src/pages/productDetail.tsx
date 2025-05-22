@@ -128,6 +128,7 @@ const ProductDetailPage: React.FC = () => {
                             mt={10}
                             
                             alt={product.name}
+                            align={"center"}
                             borderRadius={"md"}
                             objectFit={"cover"}
                             src={
@@ -157,7 +158,7 @@ const ProductDetailPage: React.FC = () => {
                         <Text color="blue.600" fontWeight="bold">Rp {Number(product.price).toLocaleString('id-ID')}</Text>
                         
                         <Divider/>
-                        <Text fontWeight='bold' color='gray.700'>{product.shop_id}</Text>
+                        <Text fontWeight='bold' color='gray.700'>{product.shop.shop_name}</Text>
                         <Divider/>
                         <Text fontWeight="semibold">Description Product</Text>
                         <Text fontSize='sm' color='gray.600'>{product.description}</Text>

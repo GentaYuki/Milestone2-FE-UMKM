@@ -3,13 +3,14 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import RegisterForm from './pages/register2'
 import LoginForm from './pages/login'
 import ProfileForm from './pages/profile'
-import HomePage from './pages/home'
 import HomePage2 from './pages/home2'
 import ProductDetailPage from './pages/productDetail'
 import CategoryPage from './pages/category'
 import CheckoutPage from './pages/checkout'
 import PaymentPage from './pages/payment'
 import ChangePasswordForm from './pages/changePass'
+import CreateProductPage from './pages/createProduct'
+import UpdateProductPage from './pages/updateProduct'
 
 function App() {
   return (
@@ -24,6 +25,8 @@ function App() {
         <Route path='/checkout' element={<CheckoutPage />} />
         <Route path='/payment' element={<PaymentPage />} />
         <Route path='/changepassword' element={<ChangePasswordForm />} />
+        <Route path='/createproduct' element={<CreateProductPage />} />
+        <Route path='/updateproduct/:productId' element={<UpdateProductPage />} />
       </Routes>
     </Router>
   );

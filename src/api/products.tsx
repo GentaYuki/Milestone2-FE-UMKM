@@ -15,7 +15,9 @@ export interface ProductImage {
     product_images: ProductImage[];
     status: string;
     stock: number;
-    shop_id: number;
+    shop: {
+      shop_name: string;
+    };
   }
 
   interface SingleProductResponse {

@@ -206,7 +206,7 @@ useEffect(() => {
                         {product.name}
                     </Text>
                     <Text fontSize="xs" color="gray.600" noOfLines={1}>
-                        {product.shop_id}
+                        {product.shop.shop_name}
                     </Text>
                     <Flex justify="space-between" align="center" mt={1}>
                         <Text fontWeight="bold" fontSize="sm">
