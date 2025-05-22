@@ -9,6 +9,8 @@ import CategoryPage from './pages/category'
 import CheckoutPage from './pages/checkout'
 import PaymentPage from './pages/payment'
 import ChangePasswordForm from './pages/changePass'
+import { ShopRegisterPage } from './pages/ShopRegisterPage'
+import ProductList from './pages/ProductList'
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
         <Route path='/checkout' element={<CheckoutPage />} />
         <Route path='/payment' element={<PaymentPage />} />
         <Route path='/changepassword' element={<ChangePasswordForm />} />
+        <Route path='/createshop' element={<ShopRegisterPage />}/>
+        <Route path='/productlist' element={<ProductList />} />
       </Routes>
     </Router>
   );
