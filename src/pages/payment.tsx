@@ -1,35 +1,53 @@
-import React, { useState , useEffect } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import {
+  Box,
+  Card,
+  CardBody,
+  CardHeader,
+  Divider,
+  Flex,
+  Image,
+  SimpleGrid,
+  Text,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  ModalHeader,
+  ModalCloseButton
+} from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { SubmitButton, BackButton } from '../components/button';
 
-// import local images
+// Images
 import BCAImg from '../assets/image/BCA.jpg';
 import BNIImg from '../assets/image/BNI.png';
 import BRIImg from '../assets/image/BRI.png';
 import GopayImg from '../assets/image/Gopay.jpg';
 
-
 const paymentMethods = [
-  { id: 'bca', label: 'BCA', image : BCAImg, last4: '1238' },
+  { id: 'bca', label: 'BCA', image: BCAImg, last4: '1238' },
   { id: 'bni', label: 'BNI', image: BNIImg, last4: '2219' },
   { id: 'bri', label: 'BRI', image: BRIImg, last4: '9084' },
-  { id: 'gopay', label: 'Gopay', image : GopayImg, last4: '8935' },
+  { id: 'gopay', label: 'Gopay', image: GopayImg, last4: '8935' },
 ];
 
 const PaymentPage: React.FC = () => {
   const [selectedMethod, setSelectedMethod] = useState<string>('');
-  const [showModal, setShowModal] = useState(false);
   const [orderTotal, setOrderTotal] = useState<number>(0);
   const navigate = useNavigate();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     const total = Number(localStorage.getItem('checkout_total') || 0);
     setOrderTotal(total);
-  }, []);  
+  }, []);
 
   const handlePayment = async () => {
     try {
-      setShowModal(true);
+      onOpen();
 
       const userId = localStorage.getItem('user_id');
       if (!userId) {
@@ -37,88 +55,93 @@ const PaymentPage: React.FC = () => {
         return;
       }
 
-      // Delete cart
       await axios.delete(`https://expected-odella-8fe2e9ce.koyeb.app/cart/clear/${userId}`);
-      // Delete total_order from localStorage
       localStorage.removeItem('checkout_total');
-
     } catch (error) {
       console.error('Failed to complete payment:', error);
     }
   };
 
   return (
-    <div className="max-w-sm mx-auto px-4 py-6 text-sm">
-      <h2 className="text-lg font-bold mb-4">Checkout</h2>
+    <Box maxW="md" mx="auto" p={4}>
+      <BackButton top={5} left={5}/>
+      <Text fontSize="xl" fontWeight="bold" mb={4}>
+        Payment
+      </Text>
 
       {/* Order Summary */}
-      <div className="bg-gray-50 p-4 rounded-lg mb-4 border space-y-2">
-        <div className="flex justify-between">
-          <span>Order</span>
-          <span>Rp {orderTotal.toLocaleString()}</span>
-        </div>
-        <div className="flex justify-between">
-          <span>Shipping</span>
-          <span>Rp 0</span>
-        </div>
-        <hr />
-        <div className="flex justify-between font-semibold">
-          <span>Total</span>
-          <span>Rp {orderTotal.toLocaleString()}</span>
-        </div>
-      </div>
+      <Card mb={6}>
+        <CardHeader fontWeight="semibold">Order Summary</CardHeader>
+        <CardBody>
+          <Flex justify="space-between" mb={2}>
+            <Text>Order</Text>
+            <Text>Rp {orderTotal.toLocaleString()}</Text>
+          </Flex>
+          <Flex justify="space-between" mb={2}>
+            <Text>Shipping</Text>
+            <Text>Rp 0</Text>
+          </Flex>
+          <Divider my={2} />
+          <Flex justify="space-between" fontWeight="semibold">
+            <Text>Total</Text>
+            <Text>Rp {orderTotal.toLocaleString()}</Text>
+          </Flex>
+        </CardBody>
+      </Card>
 
       {/* Payment Methods */}
-      <div className="mb-4">
-        <h3 className="font-medium mb-2">Payment</h3>
-        <div className="space-y-2">
-          {paymentMethods.map((method) => (
-            <div
-              key={method.id}
-              className={`flex items-center justify-between px-4 py-3 rounded-lg border cursor-pointer ${
-                selectedMethod === method.id
-                  ? 'border-pink-500 bg-white'
-                  : 'border-gray-300 bg-gray-50'
-              }`}
-              onClick={() => setSelectedMethod(method.id)}
-            >
-              <div className="flex items-center space-x-2">
-              <img src={method.image} alt={method.label} className="w-8 h-8 rounded" />
-                <span>{method.label}</span>
-              </div>
-              <span>**** {method.last4}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+      <Text fontWeight="medium" mb={2}>
+        Payment
+      </Text>
+      <SimpleGrid spacing={3}>
+        {paymentMethods.map((method) => (
+          <Card
+            key={method.id}
+            borderColor={selectedMethod === method.id ? 'pink.400' : 'gray.200'}
+            bg={selectedMethod === method.id ? 'white' : 'gray.50'}
+            borderWidth="1px"
+            onClick={() => setSelectedMethod(method.id)}
+            cursor="pointer"
+            _hover={{ borderColor: 'pink.300' }}
+          >
+            <CardBody display="flex" justifyContent="space-between" alignItems="center" p={3}>
+              <Flex  gap={3}>
+                <Box w="150px" h="50px">
+                <Image src={method.image} alt={method.label} objectFit="contain" w="100%" h="100%" align={'left'} />
+                </Box>
+              </Flex>
+              <Text fontSize="sm" color="gray.500">
+                **** {method.last4}
+              </Text>
+            </CardBody>
+          </Card>
+        ))}
+      </SimpleGrid>
 
       {/* Continue Button */}
-      <button
-        className="w-full bg-pink-600 text-white py-3 rounded-lg font-medium"
-        onClick={handlePayment}
-      >
+      <Box mt={4} gap={2}>
+      <SubmitButton onClick={handlePayment} isDisabled={!selectedMethod}>
         Continue
-      </button>
+      </SubmitButton>
+      </Box>
 
-      {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-72 text-center">
-            <div className="text-4xl mb-4 text-pink-500">✅</div>
-            <p className="text-lg font-semibold mb-2">Payment done successfully.</p>
-            <button
-              className="mt-4 text-sm text-pink-600 underline"
-              onClick={() => { 
-                setShowModal(false);
-                navigate('/home');
-              }}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+      {/* Success Modal */}
+      <Modal isOpen={isOpen} onClose={() => {
+        onClose();
+        navigate('/home');
+      }} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader textAlign="center" color="green.500" fontSize="3xl">✅</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody textAlign="center" pb={6}>
+            <Text fontSize="lg" fontWeight="semibold">
+              Payment done successfully.
+            </Text>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </Box>
   );
 };
 

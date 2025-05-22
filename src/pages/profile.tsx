@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import { TextInputField } from '../components/InputField2';
 import axios from 'axios';
-import { SubmitButton, LogoutButton } from '../components/button';
+import { SubmitButton, LogoutButton, BackButton } from '../components/button';
 import { Accordion, AccordionButton, AccordionPanel, AccordionItem, AccordionIcon, Box } from '@chakra-ui/react';
 
 const ProfileForm: React.FC = () => {
@@ -28,7 +28,6 @@ const ProfileForm: React.FC = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       const userId = localStorage.getItem('user_id');
-      console.log (userId);
       if (!userId){
         console.error('User ID not found in localStorage');
         navigate('/login');
@@ -162,8 +161,7 @@ const ProfileForm: React.FC = () => {
 
   return (
     <div className="max-w-[375px] mx-auto px-4 py-6">
-      <button onClick={() => navigate(-1)} className="flex items-center text-sm text-gray-500 mb-4 gap-1"> <span className='text-2xl'>&larr;</span>
-      </button>
+      <BackButton top={5} left={5} />
 
       <h2 className="text-center text-2xl font-bold mb-6">Profile</h2>
 

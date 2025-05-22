@@ -115,17 +115,20 @@ const ProductDetailPage: React.FC = () => {
     }
 
     return (
-         <Box bg="gray.50" minH="100vh" maxW="375px" mx="auto" position="relative" px={4} pb={24}>
+         <Box bg="gray.50" minH="100vh" maxW="425px" mx="auto" px={4} pt={10} pb={15}>
                 {/* Back Button */}
-                <BackButton top={5} left={5} />
+                
 
             <Card borderRadius="xl" boxShadow="md">
+                <BackButton top={5} left={5} />
                 <CardBody>
                 {/* Product Content */}
                     {/* Product Image */}
                         <Image
                             mt={10}
+                            
                             alt={product.name}
+                            align={"center"}
                             borderRadius={"md"}
                             objectFit={"cover"}
                             src={
@@ -155,9 +158,9 @@ const ProductDetailPage: React.FC = () => {
                         <Text color="blue.600" fontWeight="bold">Rp {Number(product.price).toLocaleString('id-ID')}</Text>
                         
                         <Divider/>
-                        <Text fontWeight='bold' color='gray.700'>{product.shop_id}</Text>
+                        <Text fontWeight='bold' color='gray.700'>{product.shop.shop_name}</Text>
                         <Divider/>
-                        <Text fontWeight="semibold">Description</Text>
+                        <Text fontWeight="semibold">Description Product</Text>
                         <Text fontSize='sm' color='gray.600'>{product.description}</Text>
                         {/* <div>
                             <h2 className="font-semibold">Description</h2>
