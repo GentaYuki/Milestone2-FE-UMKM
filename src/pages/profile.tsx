@@ -90,7 +90,7 @@ const ProfileForm: React.FC = () => {
       await axios.put(`https://expected-odella-8fe2e9ce.koyeb.app/user/update/${userId}`, payload);
       alert('Profile updated successfully');
       console.log(payload);
-      navigate('/home');
+      navigate('/');
     } catch (error) {
       console.error('Error updating profile:', error);
     }

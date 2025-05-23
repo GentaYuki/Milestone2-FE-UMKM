@@ -3,16 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom'
 import NavBar from '../components/navBar'
 import { fetchProducts, Product } from '../api/products'
 
-const CategoryPage: React.FC = () => {
-  const { categorySlug } = useParams<{ categorySlug: string }>()
-  const navigate = useNavigate()
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [categoryName, setCategoryName] = useState('')
 
-  // Categories data (same as home page)
-  const categories = [
+
+ // Categories data (same as home page)
+const categories = [
     {
       name: "Food",
       image: "https://img.freepik.com/free-photo/top-view-table-full-delicious-food-composition_23-2149141352.jpg",
@@ -40,6 +34,16 @@ const CategoryPage: React.FC = () => {
     },
     
 ];
+
+const CategoryPage: React.FC = () => {
+  const { categorySlug } = useParams<{ categorySlug: string }>()
+  const navigate = useNavigate()
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [categoryName, setCategoryName] = useState('')
+
+ 
 
   useEffect(() => {
     const loadProducts = async () => {

@@ -128,7 +128,7 @@ const PaymentPage: React.FC = () => {
       {/* Success Modal */}
       <Modal isOpen={isOpen} onClose={() => {
         onClose();
-        navigate('/home');
+        navigate('/');
       }} isCentered>
         <ModalOverlay />
         <ModalContent>

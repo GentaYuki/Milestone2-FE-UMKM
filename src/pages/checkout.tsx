@@ -21,6 +21,16 @@ interface UserAddress {
   userId: string;
 }
 
+interface CartAPIItem {
+  cart_id: number;
+  quantity: number;
+  product: {
+    name: string;
+    price: string;
+    product_images: { image_url: string }[];
+  };
+}
+
 const CheckoutPage: React.FC = () => {
   const [address, setAddress] = useState<UserAddress | null>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -54,7 +64,7 @@ const CheckoutPage: React.FC = () => {
         });
 
         const cartRes = await axios.get(`https://expected-odella-8fe2e9ce.koyeb.app/cart/${userId}`);
-        const mappedCartItems = cartRes.data.data.map((item: any) => ({
+        const mappedCartItems = (cartRes.data.data as CartAPIItem[]).map((item) => ({
           id: item.cart_id.toString(),
           name: item.product.name,
           price: parseFloat(item.product.price),
@@ -79,7 +89,7 @@ const CheckoutPage: React.FC = () => {
   const handleProceedToPayment = () => {
     if (cartItems.length === 0) {
       alert('Your cart is empty.');
-      navigate('/home');
+      navigate('/');
       return;
     }
     const total = getTotalAmount();

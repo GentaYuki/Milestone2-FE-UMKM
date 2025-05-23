@@ -33,7 +33,7 @@ const LoginForm : React.FC = () => {
         const user_id = localStorage.getItem('user_id');
         const access_token = localStorage.getItem('access_token');
         if (user_id && access_token) {
-            navigate('/home');
+            navigate('/');
         }
     }, [navigate]);
 
@@ -47,7 +47,7 @@ const LoginForm : React.FC = () => {
                 localStorage.setItem('user_id', data.user.user_id.toString());
                 localStorage.setItem('access_token', data.access_token);
             }
-            navigate('/home');
+            navigate('/');
         } catch (err: unknown) {
             if (axios.isAxiosError(err) && err.response) {
                 setError(err.response.data.message || 'Login failed');
