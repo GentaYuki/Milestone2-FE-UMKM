@@ -10,7 +10,7 @@ const NavBar: React.FC = () => {
       <div className="flex justify-around items-center h-16 px-4">
         {/* Home Button */}
         <button 
-          onClick={() => navigate('/home')} 
+          onClick={() => navigate('/')} 
           className="flex flex-col items-center justify-center w-full text-gray-800"
         >
           <HomeIcon className="w-6 h-6" />
