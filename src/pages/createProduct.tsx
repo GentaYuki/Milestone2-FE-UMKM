@@ -1,159 +1,202 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import { TextInputField } from '../components/InputField2';
+import { TextInputField, SelectField } from '../components/InputField2';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { SubmitButton , BackButton} from '../components/button';
-import { Card, CardBody, Heading, Tabs, TabList, TabPanels, Tab, TabPanel, Box} from '@chakra-ui/react'
+import { SubmitButton, BackButton } from '../components/button';
+import { Card, CardBody, Heading, Box } from '@chakra-ui/react';
+import { Header } from '../components/Header';
 
-
-interface createProductFormValues {
-    name: string;
-    description: string;
-    category: string;
-    price: string;
-    quantity: number;
+interface CreateProductFormValues {
+  name: string;
+  price: number;
+  description: string;
+  stock: number;
+  category: string;
+  image?: File | null;
 }
 
-
 const createProductSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
-    description: Yup.string().required('Description is required'),
-    category: Yup.string().required('Category is required'),
-    price: Yup.string().required('Price is required'),
-    quantity: Yup.number().required('Quantity is required').moreThan(0, 'Quantity must be greater than 0'),
+  name: Yup.string().required('Name is required'),
+  price: Yup.number().required('Price is required').positive('Price must be positive'),
+  description: Yup.string().required('Description is required'),
+  stock: Yup.number().required('Quantity is required').moreThan(0, 'Quantity must be greater than 0'),
+  category: Yup.string().required('Category is required'),
 });
 
-const CreateProductPage : React.FC = () => {
-    const navigate = useNavigate();
-    const [error, setError] = useState<string>('');
-    const [productId, setProductId] = useState<number | null>(null);
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [uploadStatus, setUploadStatus] = useState<string>('');
+const CreateProductPage: React.FC = () => {
+  const navigate = useNavigate();
+  const [error, setError] = useState<string>('');
 
-    const handleProductSubmit = async (values: createProductFormValues) => {
-        const userId = localStorage.getItem('user_id');
-        const access_token = localStorage.getItem('access_token');
+  const handleSubmit = async (values: CreateProductFormValues) => {
+    const userId = localStorage.getItem('user_id');
+    const access_token = localStorage.getItem('access_token');
 
-            if (!userId && !access_token) {
-                console.error('Please Login First');
-                navigate('/login');
-                return;
-            }
-        try {
-            const rensponse = await axios.post('https://expected-odella-8fe2e9ce.koyeb.app/product/', values, {
-                headers: {
-                Authorization: `Bearer ${access_token}`
-                }
-            });
-            const newProductId = rensponse.data?.data?.product_id;
-            setProductId(newProductId);
-            setError('');
-        } catch (err: unknown) {
-            if (axios.isAxiosError(err) && err.response) {
-                setError(err.response.data.message || 'Product creation failed');
-            } else {
-                setError(' An error occurred during product creation');
-            }
-        };
-    };
+    if (!userId || !access_token) {
+      console.error('Please Login First');
+      navigate('/login');
+      return;
+    }
 
-    const handleImageUpload = async () => {
-        if (!productId || !selectedFile) {
-            setUploadStatus('Product ID or file not found');
-            return;
+    let newProductId: number | undefined;
+
+    try {
+      // 1. Buat produk
+      const response = await axios.post(
+        'https://expected-odella-8fe2e9ce.koyeb.app/product/',
+        {
+          name: values.name,
+          price: values.price,
+          description: values.description,
+          stock: values.stock,
+          category: values.category,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
         }
+      );
 
+      newProductId = response.data?.data?.product_id;
+      if (!newProductId) throw new Error('Product ID not returned from server');
+
+      // 2. Upload gambar jika ada
+      if (values.image) {
         const formData = new FormData();
-        formData.append('image', selectedFile);
+        formData.append('image', values.image);
 
         try {
-            await axios.post(`https://expected-odella-8fe2e9ce.koyeb.app/upload/productimage/${productId}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            setUploadStatus('Image uploaded successfully');
-            navigate('/DashboardSeller');
-        } catch (err: unknown) {
-            if (axios.isAxiosError(err) && err.response) {
-                setError(err.response.data.message || 'Upload Image failed');
-            } else {
-                setError(' An error occurred during Upload Image');
+          await axios.post(
+            `https://expected-odella-8fe2e9ce.koyeb.app/upload/productimage/${newProductId}`,
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${access_token}`,
+              },
             }
+          );
+        } catch (uploadError) {
+          // Upload gagal, rollback: hapus produk yang sudah dibuat
+          try {
+            await axios.delete(
+              `https://expected-odella-8fe2e9ce.koyeb.app/product/${newProductId}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${access_token}`,
+                },
+              }
+            );
+            setError('Image upload failed. Product creation was canceled.');
+          } catch (deleteError) {
+            setError('Image upload failed and product deletion also failed.');
+          }
+          return;
         }
-    };
+      }
 
-    return (
-        <Box p={4}>
-            <BackButton top={5} left={5}/>
-            <Heading size='md' mb='4'>Create Product</Heading>
-            <Tabs isFitted variant='enclosed'>
-                <TabList>
-                    <Tab>Create Product</Tab>
-                    <Tab isDisabled={!productId}>Product Image</Tab>
-                </TabList>
+      // Jika sukses semua, navigasi ke daftar produk
+      setError('');
+      navigate('/productlist');
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err) && err.response) {
+        setError(err.response.data.message || 'Submission failed');
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An error occurred during submission');
+      }
+    }
+  };
 
-                <TabPanels>
-                    <TabPanel>
-                        <Card boxShadow={'lg'}>
-                            <CardBody>
-                                <Formik
-                                initialValues={{
-                                    name: '',
-                                    description:'',
-                                    category: '',
-                                    price:'',
-                                    quantity: 0 ,
-                                }}
-                                validationSchema={createProductSchema}
-                                onSubmit={handleProductSubmit}
-                                >
-                                    {() => (
-                                        <Form>
-                                            <Box display={'flex'} flexDirection={'column'} gap={4}>
-                                                <TextInputField name='name' 
-                                                label='Product Name:' placeholder='Nama Product'/>
-                                                <TextInputField name='description'label='Description:' placeholder='Description Product' />
-                                                <TextInputField name='category' 
-                                                label='Category:' placeholder='Category' />
-                                                <TextInputField name='price' 
-                                                label='Price:' placeholder='Price' />
-                                                <TextInputField name='quantity' 
-                                                label='Quantity:' placeholder='Quantity' type='number' />
+  return (
+    <Box p={4}>
+      <BackButton top={5} left={5} />
+      <Header />
+      <Heading size="md" mb="4">
+        Create Product
+      </Heading>
+      <Card boxShadow={'lg'}>
+        <CardBody>
+          <Formik
+            initialValues={{
+              name: '',
+              price: 0,
+              description: '',
+              stock: 0,
+              category: '',
+              image: null,
+            }}
+            validationSchema={createProductSchema}
+            onSubmit={handleSubmit}
+          >
+            {({ setFieldValue }) => (
+              <Form>
+                <Box display={'flex'} flexDirection={'column'} gap={4}>
+                  <TextInputField
+                    name="name"
+                    label="Product Name:"
+                    placeholder="Product Name"
+                  />
+                  <TextInputField
+                    name="price"
+                    label="Price:"
+                    placeholder="Price"
+                    type="number"
+                  />
+                  <TextInputField
+                    name="description"
+                    label="Description:"
+                    placeholder="Description Product"
+                  />
+                  <TextInputField
+                    name="stock"
+                    label="Stock:"
+                    placeholder="Stock"
+                    type="number"
+                  />
+                  <SelectField
+                    name="category"
+                    label="Category:"
+                    options={[
+                      'food',
+                      'fashion',
+                      'handicraft',
+                      'electronic',
+                      'herbal',
+                    ]}
+                    placeholder="Select Category"
+                  />
 
-                                                {error && <p className='text-red-500 text-sm text-center'>{error}</p>}
+                  <Box>
+                    <label>Upload Image:</label>
+                    <input
+                      type="file"
+                      accept="image/png, image/jpeg, image/jpg"
+                      onChange={(event) => {
+                        const file = event.currentTarget.files?.[0] || null;
+                        setFieldValue('image', file);
+                      }}
+                    />
+                  </Box>
 
-                                                <Box mt={4}>
-                                                    <SubmitButton type='submit'>Create Product</SubmitButton>
-                                                </Box>
-                                            </Box>
-                                        </Form>
-                                    )}
-                                </Formik>
-                            </CardBody>
-                        </Card>
-                    </TabPanel>
+                  {error && (
+                    <p className="text-red-500 text-sm text-center">{error}</p>
+                  )}
 
-                    <TabPanel>
-                        <Card>
-                            <CardBody>
-                                <input 
-                                className='mb-4'
-                                type="file"
-                                accept="image/png, image/jpeg, image/jpg" 
-                                onChange={(e) => setSelectedFile(e.target.files?.[0] || null)} />
-
-                                <SubmitButton onClick={handleImageUpload}>Upload Image</SubmitButton>
-                                {uploadStatus && <p>{uploadStatus}</p>}
-                            </CardBody>
-                        </Card>
-                    </TabPanel>
-                </TabPanels>
-            </Tabs>
-        </Box>
-    );
+                  <Box mt={4}>
+                    <SubmitButton type="submit">Create Product</SubmitButton>
+                  </Box>
+                </Box>
+              </Form>
+            )}
+          </Formik>
+        </CardBody>
+      </Card>
+    </Box>
+  );
 };
 
 export default CreateProductPage;

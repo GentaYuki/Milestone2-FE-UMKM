@@ -1,6 +1,6 @@
 import React , {useState}from "react";
-import { Input, InputGroup,InputLeftElement, InputRightElement, Button, FormControl, FormLabel, FormErrorMessage} from '@chakra-ui/react'
-import { Field, FieldInputProps, FormikProps } from "formik";
+import { Input, InputGroup,InputLeftElement, InputRightElement, Button, FormControl, FormLabel, FormErrorMessage, Select} from '@chakra-ui/react'
+import { Field, FieldInputProps, FormikProps, useField } from "formik";
 
 // General Input Field (Text)
 export const TextInputField = ({
@@ -84,5 +84,31 @@ export const PasswordInputField = ({
         </FormControl>
       )}
     </Field>
+  );
+};
+
+interface SelectFieldProps {
+  label: string;
+  name: string;
+  placeholder?: string;
+  options: string[];
+}
+
+export const SelectField: React.FC<SelectFieldProps> = ({ label, options, ...props }) => {
+  const [field, meta] = useField(props.name);
+
+  return (
+    <FormControl isInvalid={!!meta.error && meta.touched}>
+      <FormLabel htmlFor={props.name}>{label}</FormLabel>
+      <Select {...field} {...props}>
+        <option value="">{props.placeholder || 'Select an option'}</option>
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </Select>
+      <FormErrorMessage>{meta.error}</FormErrorMessage>
+    </FormControl>
   );
 };

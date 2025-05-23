@@ -172,7 +172,7 @@ export const ShopRegisterPage: React.FC = () => {
           >
             <ArrowLeftIcon className="w-5 h-5" />
           </Button>
-          <h1 className="ml-2 text-3xl font-bold">Buat Toko Anda</h1>
+          <h1 className="ml-2 text-3xl font-bold">Create Your Shop</h1>
         </div>
 
         <Formik
@@ -184,19 +184,19 @@ export const ShopRegisterPage: React.FC = () => {
             <Form className="space-y-4">
               <TextInputField 
                 name="shopName"
-                placeholder="Nama Toko"
+                placeholder="Shop's Name"
                 icon={<FiShoppingBag color="gray" />}
               />
 
               <TextInputField 
                 name="city"
-                placeholder="Kota"
+                placeholder="City"
                 icon={<FiMapPin color="gray" />}
               />
 
               <TextInputField 
                 name="phoneNumber"
-                placeholder="Nomor Telepon"
+                placeholder="Telephone Number"
                 icon={<FiPhone color="gray" />}
               />
 
@@ -209,25 +209,25 @@ export const ShopRegisterPage: React.FC = () => {
 
               <TextInputField 
                 name="shopCategory"
-                placeholder="Kategori Toko (opsional)"
+                placeholder="Category (optional)"
                 icon={<FiShoppingBag color="gray" />}
               />
 
               <TextInputField 
                 name="idCard"
-                placeholder="Nomor KTP (opsional)"
+                placeholder="ID Card (optional)"
                 icon={<FiCreditCard color="gray" />}
               />
 
               <TextInputField 
                 name="bankAccount"
-                placeholder="Nomor Rekening (opsional)"
+                placeholder="Bank Account's Number (optional)"
                 icon={<FiDollarSign color="gray" />}
               />
 
               <TextInputField 
                 name="bankHolder"
-                placeholder="Nama Pemilik Rekening (opsional)"
+                placeholder="Bank Account Holder's Name (optional)"
                 icon={<FiUser color="gray" />}
               />
 
@@ -236,13 +236,13 @@ export const ShopRegisterPage: React.FC = () => {
                 disabled={isSubmitting} 
                 loadingText="Mendaftarkan..."
               >
-                Daftarkan Toko
+                Create Shop
               </SubmitButton>
 
-              <p className="text-xs text-gray-500 text-center px-2">
+              {/* <p className="text-xs text-gray-500 text-center px-2">
                 Dengan mengklik <span className="text-pink-600 font-medium">Daftarkan Toko</span>, 
                 Anda menyetujui Syarat dan Ketentuan kami
-              </p>
+              </p> */}
             </Form>
           )}
         </Formik>
