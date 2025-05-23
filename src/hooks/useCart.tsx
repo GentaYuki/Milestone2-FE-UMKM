@@ -8,11 +8,6 @@ type CartItem = {
     quantity: number;
     image: string;
   };
-  
-// type CartState = {
-//     items: CartItem[];
-//     total: number;  // Total harga
-//   };
 
 export const useCart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
